@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "outDir": "${configDir}/dist",
+    "rootDir": "${configDir}/src",
+    "composite": true,
+    "incremental": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "customConditions": [
+      "@diffson/source"
+    ],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true
+  },
+  "exclude": [
+    "${configDir}/dist",
+    "${configDir}/node_modules"
+  ]
+}

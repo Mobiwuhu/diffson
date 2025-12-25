@@ -3,9 +3,13 @@ node_modules/
 
 # Build output
 dist/
+*.tsbuildinfo
 
 # Bun
 *.lockb
+
+# Turbo
+.turbo/
 
 # IDE
 .vscode/
