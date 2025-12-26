@@ -1,5 +1,10 @@
 import { Box, Text } from "ink";
-import { Diff, AlgorithmEnum, type Result } from "@diffson/core";
+import {
+  Diff,
+  type Result,
+  SequentialArrayComparator,
+  LeftJoinObjectComparator,
+} from "@diffson/core";
 import { DiffResult } from "./DiffResult";
 import { InteractiveMode } from "./InteractiveMode";
 
@@ -9,17 +14,6 @@ interface AppProps {
   algorithm?: string;
   ignore?: string[];
   interactive?: boolean;
-}
-
-function getAlgorithm(name?: string) {
-  switch (name) {
-    case "simple":
-      return AlgorithmEnum.BY_INDEX;
-    case "leftJoin":
-      return AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY;
-    default:
-      return AlgorithmEnum.DEFAULT;
-  }
 }
 
 export function App({ json1, json2, algorithm, ignore, interactive }: AppProps) {
@@ -56,10 +50,21 @@ export function App({ json1, json2, algorithm, ignore, interactive }: AppProps) 
   let error: string | null = null;
 
   try {
-    results = new Diff()
-      .withAlgorithmEnum(getAlgorithm(algorithm))
-      .withNoisePahList(ignore ?? null)
-      .diff(json1, json2);
+    const left = JSON.parse(json1);
+    const right = JSON.parse(json2);
+    let diff = Diff.of(left, right);
+
+    if (ignore && ignore.length > 0) {
+      diff = diff.withNoisePath(ignore);
+    }
+
+    if (algorithm === "simple") {
+      diff = diff.withArrayComparator(new SequentialArrayComparator());
+    } else if (algorithm === "leftJoin") {
+      diff = diff.withObjectComparator(new LeftJoinObjectComparator());
+    }
+
+    results = diff.compare();
   } catch (e) {
     error = (e as Error).message;
     results = [];

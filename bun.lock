@@ -39,6 +39,7 @@
   },
   "catalog": {
     "@types/bun": "latest",
+    "@wendellhu/redi": "latest",
     "typescript": "^5.7.0",
   },
   "packages": {

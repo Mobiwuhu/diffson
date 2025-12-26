@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Text, useInput, useApp } from "ink";
 import TextInput from "ink-text-input";
-import { Diff, AlgorithmEnum, type Result } from "@diffson/core";
+import { Diff, type Result } from "@diffson/core";
 import { DiffResult } from "./DiffResult.js";
 
 type Step = "json1" | "json2" | "result";
@@ -38,9 +38,9 @@ export function InteractiveMode() {
   const handleJson2Submit = (value: string) => {
     setJson2(value);
     try {
-      const diff = new Diff()
-        .withAlgorithmEnum(AlgorithmEnum.DEFAULT)
-        .diff(json1, value);
+      const left = JSON.parse(json1);
+      const right = JSON.parse(value);
+      const diff = Diff.of(left, right).compare();
       setResults(diff);
       setError(null);
     } catch (e) {
