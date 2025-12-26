@@ -10,7 +10,7 @@ describe("LeftJoinObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY)
       .diff(case1Left, case1Right);
 
     // LeftJoin only compares a, b, c (keys from left), not d
@@ -24,7 +24,7 @@ describe("LeftJoinObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY)
       .diff(case2Left, case2Right);
 
     // Compares a, b, c from left - c is missing in right
@@ -38,7 +38,7 @@ describe("LeftJoinObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY)
       .diff(case1Left, case1Right);
 
     // Compares b, c (a is filtered out by noise)
@@ -54,7 +54,7 @@ describe("LeftJoinObjectComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY)
       .diff(case3Left, case3Right);
 
     expect(diff.length).toBe(4);

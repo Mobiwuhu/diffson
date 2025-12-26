@@ -10,7 +10,7 @@ describe("SimpleObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case1Left, case1Right);
 
     expect(diff.length).toBe(4);
@@ -23,7 +23,7 @@ describe("SimpleObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case2Left, case2Right);
 
     expect(diff.length).toBe(3);
@@ -36,7 +36,7 @@ describe("SimpleObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case1Left, case1Right);
 
     expect(diff.length).toBe(3);
@@ -50,7 +50,7 @@ describe("SimpleObjectComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath([])
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case4Left, case4Right);
 
     expect(diff.length).toBe(4);
@@ -63,7 +63,7 @@ describe("SimpleObjectComparator", () => {
     const diff = new Diff()
       .withNoisePahList(null)
       .withSpecialPath([])
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case5Left, case5Right);
 
     expect(diff.length).toBe(1);
@@ -75,7 +75,7 @@ describe("SimpleObjectComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(null)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case6Left, case6Right);
 
     expect(diff.length).toBe(3);
@@ -90,7 +90,7 @@ describe("SimpleObjectComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case3Left, case3Right);
 
     expect(diff.length).toBe(4);

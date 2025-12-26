@@ -9,7 +9,7 @@ describe("AbstractObject", () => {
     const right = '[{"a":{"b":2}}]';
 
     const diff = new Diff()
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(left, right);
 
     // Path should be "a.b" not "[0].a.b"

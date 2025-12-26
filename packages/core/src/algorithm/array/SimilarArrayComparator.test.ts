@@ -10,7 +10,7 @@ describe("SimilarArrayComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case1Left, case1Right);
 
     const leftResult = diff.map((r) => r.left ?? "null").join(" ") + " ";
@@ -28,7 +28,7 @@ describe("SimilarArrayComparator", () => {
 
     const diff = new Diff()
       .withNoisePahList(noiseList)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case2Left, case2Right);
 
     const leftResult = diff.map((r) => r.left ?? "null").join(" ") + " ";
@@ -48,7 +48,7 @@ describe("SimilarArrayComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case1Left, case1Right);
 
     expect(diff.length).toBe(1);
@@ -63,7 +63,7 @@ describe("SimilarArrayComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case1Left, case1Right);
 
     expect(diff.length).toBe(4);
@@ -78,7 +78,7 @@ describe("SimilarArrayComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case3Left, case3Right);
 
     expect(diff.length).toBe(2);
@@ -93,7 +93,7 @@ describe("SimilarArrayComparator", () => {
     const diff = new Diff()
       .withNoisePahList(noiseList)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.MOST_COMMONLY_USED)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY)
       .diff(case4Left, case4Right);
 
     expect(diff.length).toBe(2);

@@ -14,9 +14,9 @@ interface AppProps {
 function getAlgorithm(name?: string) {
   switch (name) {
     case "simple":
-      return AlgorithmEnum.SIMPLE_ARRAY_AND_SIMPLE_OBJECT;
+      return AlgorithmEnum.BY_INDEX;
     case "leftJoin":
-      return AlgorithmEnum.SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT;
+      return AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY;
     default:
       return AlgorithmEnum.DEFAULT;
   }

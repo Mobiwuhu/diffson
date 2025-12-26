@@ -59,10 +59,10 @@ function similarAndSimpleAlgorithmModule(): AlgorithmModule {
 
 export const AlgorithmEnum = {
   DEFAULT: { getAlgorithmModule: defaultAlgorithmModule },
-  SIMPLE_ARRAY_AND_SIMPLE_OBJECT: { getAlgorithmModule: simpleAndSimpleAlgorithmModule },
-  SIMPLE_ARRAY_AND_LEFTJOIN_OBJECT: { getAlgorithmModule: simpleAndLeftJoinAlgorithmModule },
-  SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT: { getAlgorithmModule: similarAndLeftJoinAlgorithmModule },
-  MOST_COMMONLY_USED: { getAlgorithmModule: similarAndSimpleAlgorithmModule },
+  BY_INDEX: { getAlgorithmModule: simpleAndSimpleAlgorithmModule },
+  BY_INDEX_LEFT_FIELDS_ONLY: { getAlgorithmModule: simpleAndLeftJoinAlgorithmModule },
+  BY_SIMILARITY_LEFT_FIELDS_ONLY: { getAlgorithmModule: similarAndLeftJoinAlgorithmModule },
+  BY_SIMILARITY: { getAlgorithmModule: similarAndSimpleAlgorithmModule },
 } as const;
 
 export type AlgorithmEnumType = (typeof AlgorithmEnum)[keyof typeof AlgorithmEnum];

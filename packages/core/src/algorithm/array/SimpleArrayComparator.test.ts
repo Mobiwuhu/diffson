@@ -8,7 +8,7 @@ describe("SimpleArrayComparator", () => {
     const right = '[{"a":3},{"a":2},{"a":1}]';
 
     const diff = new Diff()
-      .withAlgorithmEnum(AlgorithmEnum.SIMPLE_ARRAY_AND_SIMPLE_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_INDEX)
       .diff(left, right);
 
     expect(diff.length).toBe(2);
@@ -19,7 +19,7 @@ describe("SimpleArrayComparator", () => {
     const right = '[{"a":1},{"a":2},{"a":3}]';
 
     const diff = new Diff()
-      .withAlgorithmEnum(AlgorithmEnum.SIMPLE_ARRAY_AND_SIMPLE_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_INDEX)
       .diff(left, right);
 
     expect(diff.length).toBe(2);
@@ -30,7 +30,7 @@ describe("SimpleArrayComparator", () => {
     const right = '[{"a":1}]';
 
     const diff = new Diff()
-      .withAlgorithmEnum(AlgorithmEnum.SIMPLE_ARRAY_AND_SIMPLE_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_INDEX)
       .diff(left, right);
 
     expect(diff.length).toBe(2);
@@ -41,7 +41,7 @@ describe("SimpleArrayComparator", () => {
     const right = '[{"a":1},{"a":2}]';
 
     const diff = new Diff()
-      .withAlgorithmEnum(AlgorithmEnum.SIMPLE_ARRAY_AND_SIMPLE_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_INDEX)
       .diff(left, right);
 
     expect(diff.length).toBe(0);

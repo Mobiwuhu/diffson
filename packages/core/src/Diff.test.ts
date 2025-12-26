@@ -41,7 +41,7 @@ describe("Diff", () => {
     const diff = new Diff()
       .withNoisePahList(null)
       .withSpecialPath(specialPath)
-      .withAlgorithmEnum(AlgorithmEnum.SIMLAR_ARRAY_AND_LEFTJOIN_OBJECT)
+      .withAlgorithmEnum(AlgorithmEnum.BY_SIMILARITY_LEFT_FIELDS_ONLY)
       .diffElement(a, b);
     console.log(diff);
     expect(diff[0].diffType).toBe(TYPE_MODIFY);
