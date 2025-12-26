@@ -1,15 +1,15 @@
 import { AlgorithmModule } from "./algorithm/AlgorithmModule";
-import { SimpleObjectComparator } from "./algorithm/object/SimpleObjectComparator";
+import { UnionKeyObjectComparator } from "./algorithm/object/UnionKeyObjectComparator";
 import { LeftJoinObjectComparator } from "./algorithm/object/LeftJoinObjectComparator";
 import { SimilarArrayComparator } from "./algorithm/array/SimilarArrayComparator";
-import { SimpleArrayComparator } from "./algorithm/array/SimpleArrayComparator";
+import { SequentialArrayComparator } from "./algorithm/array/SequentialArrayComparator";
 import { DefaultPrimitiveComparator } from "./algorithm/primitive/DefaultPrimitiveComparator";
 import { DefaultNullComparator } from "./algorithm/nulls/DefaultNullComparator";
 import { DefaultOtherComparator } from "./algorithm/other/DefaultOtherComparator";
 
 function defaultAlgorithmModule(): AlgorithmModule {
   return new AlgorithmModule(
-    new SimpleObjectComparator(),
+    new UnionKeyObjectComparator(),
     new SimilarArrayComparator(),
     new DefaultPrimitiveComparator(),
     new DefaultNullComparator(),
@@ -19,8 +19,8 @@ function defaultAlgorithmModule(): AlgorithmModule {
 
 function simpleAndSimpleAlgorithmModule(): AlgorithmModule {
   return new AlgorithmModule(
-    new SimpleObjectComparator(),
-    new SimpleArrayComparator(),
+    new UnionKeyObjectComparator(),
+    new SequentialArrayComparator(),
     new DefaultPrimitiveComparator(),
     new DefaultNullComparator(),
     new DefaultOtherComparator()
@@ -30,7 +30,7 @@ function simpleAndSimpleAlgorithmModule(): AlgorithmModule {
 function simpleAndLeftJoinAlgorithmModule(): AlgorithmModule {
   return new AlgorithmModule(
     new LeftJoinObjectComparator(),
-    new SimpleArrayComparator(),
+    new SequentialArrayComparator(),
     new DefaultPrimitiveComparator(),
     new DefaultNullComparator(),
     new DefaultOtherComparator()
@@ -49,7 +49,7 @@ function similarAndLeftJoinAlgorithmModule(): AlgorithmModule {
 
 function similarAndSimpleAlgorithmModule(): AlgorithmModule {
   return new AlgorithmModule(
-    new SimpleObjectComparator(),
+    new UnionKeyObjectComparator(),
     new SimilarArrayComparator(),
     new DefaultPrimitiveComparator(),
     new DefaultNullComparator(),

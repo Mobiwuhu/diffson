@@ -31,7 +31,7 @@ describe("jsonElement2Str (AbstractPrimitiveAndOther)", () => {
 
     const diff = new Diff().diff(str1, str2);
 
-    expect(diff[0].left).toBe("{省略内部字段}");
+    expect(diff[0].left).toBe("{省略对象内部字段}");
     expect(diff[0].right).toBe("1");
   });
 
@@ -41,7 +41,7 @@ describe("jsonElement2Str (AbstractPrimitiveAndOther)", () => {
 
     const diff = new Diff().diff(str1, str2);
 
-    expect(diff[0].left).toBe("[省略内部元素]");
+    expect(diff[0].left).toBe("[省略数组内部元素]");
     expect(diff[0].right).toBe("1");
   });
 

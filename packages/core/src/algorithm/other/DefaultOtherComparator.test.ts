@@ -20,8 +20,8 @@ describe("DefaultOtherComparator", () => {
   test("diff object and array", () => {
     const comparator = new DefaultOtherComparator();
     const diff = comparator.diff({ a: 1 }, [1, 2, 3], new PathModule());
-    expect(diff.getDiffResultModels()[0].left).toBe("{省略内部字段}");
-    expect(diff.getDiffResultModels()[0].right).toBe("[省略内部元素]");
+    expect(diff.getDiffResultModels()[0].left).toBe("{省略对象内部字段}");
+    expect(diff.getDiffResultModels()[0].right).toBe("[省略数组内部元素]");
   });
 
   test("diff undefined and value", () => {

@@ -3,7 +3,7 @@ import { DiffContext } from "../../model/DiffContext";
 import type { PathModule } from "../../model/PathModule";
 import type { JsonArray } from "../types";
 
-export class SimpleArrayComparator extends AbstractArray {
+export class SequentialArrayComparator extends AbstractArray {
   diffArray(a: JsonArray, b: JsonArray, pathModule: PathModule): DiffContext {
     const arrayDiffContext = new DiffContext();
     const maxLength = Math.max(a.length, b.length);

@@ -22,9 +22,9 @@ export function jsonElement2Str(element: JsonValue | undefined): string | null {
   if (element === undefined) {
     return null;
   } else if (isJsonObject(element)) {
-    return "{省略内部字段}";
+    return "{省略对象内部字段}";
   } else if (isJsonArray(element)) {
-    return "[省略内部元素]";
+    return "[省略数组内部元素]";
   } else if (isJsonPrimitive(element)) {
     return String(element);
   } else if (isJsonNull(element)) {

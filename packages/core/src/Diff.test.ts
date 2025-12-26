@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { Diff } from "./Diff";
 import { AlgorithmEnum } from "./AlgorithmEnum";
 import { TYPE_MODIFY } from "./model/ResultConvertUtil";
-import { SimpleObjectComparator } from "./algorithm/object/SimpleObjectComparator";
+import { UnionKeyObjectComparator } from "./algorithm/object/UnionKeyObjectComparator";
 import { SimilarArrayComparator } from "./algorithm/array/SimilarArrayComparator";
 import { DefaultPrimitiveComparator } from "./algorithm/primitive/DefaultPrimitiveComparator";
 import { DefaultNullComparator } from "./algorithm/nulls/DefaultNullComparator";
@@ -56,7 +56,7 @@ describe("Diff", () => {
     const diff = new Diff()
       .withNoisePahList(null)
       .withSpecialPath(specialPath)
-      .withObjectComparator(new SimpleObjectComparator())
+      .withObjectComparator(new UnionKeyObjectComparator())
       .withArrayComparator(new SimilarArrayComparator())
       .withPrimitiveAlgorithm(new DefaultPrimitiveComparator())
       .withNullComparator(new DefaultNullComparator())
@@ -74,7 +74,7 @@ describe("Diff", () => {
     const diff = new Diff()
       .withNoisePahList(null)
       .withSpecialPath(specialPath)
-      .withObjectComparator(new SimpleObjectComparator())
+      .withObjectComparator(new UnionKeyObjectComparator())
       .withArrayComparator(new SimilarArrayComparator())
       .withPrimitiveAlgorithm(new DefaultPrimitiveComparator())
       .withNullComparator(new DefaultNullComparator())
@@ -92,7 +92,7 @@ describe("Diff", () => {
     const diff1 = new Diff()
       .withNoisePahList(null)
       .withSpecialPath(specialPath)
-      .withObjectComparator(new SimpleObjectComparator())
+      .withObjectComparator(new UnionKeyObjectComparator())
       .diffElement(a, b);
     const diff2 = new Diff()
       .withNoisePahList(null)

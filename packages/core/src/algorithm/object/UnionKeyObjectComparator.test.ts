@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { Diff } from "../../Diff";
 import { AlgorithmEnum } from "../../AlgorithmEnum";
 
-describe("SimpleObjectComparator", () => {
+describe("UnionKeyObjectComparator", () => {
   test("diff objects with added key in right", () => {
     const case1Left = '[{"a":1,"b":2,"c":3}]';
     const case1Right = '[{"a":7,"b":5,"c":6,"d":9}]';

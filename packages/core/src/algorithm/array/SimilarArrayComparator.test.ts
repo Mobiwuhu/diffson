@@ -18,7 +18,7 @@ describe("SimilarArrayComparator", () => {
 
     expect(diff.length).toBe(3);
     expect(leftResult).toBe("7 6 null ");
-    expect(rightResult).toBe("4 1 {省略内部字段} ");
+    expect(rightResult).toBe("4 1 {省略对象内部字段} ");
   });
 
   test("diff arrays with similarity matching - case 2 (reversed)", () => {
@@ -35,7 +35,7 @@ describe("SimilarArrayComparator", () => {
     const rightResult = diff.map((r) => r.right ?? "null").join(" ") + " ";
 
     expect(diff.length).toBe(3);
-    expect(leftResult).toBe("4 1 {省略内部字段} ");
+    expect(leftResult).toBe("4 1 {省略对象内部字段} ");
     expect(rightResult).toBe("7 6 null ");
   });
 

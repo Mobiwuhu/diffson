@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { DefaultNullComparator } from "./DefaultNullComparator";
 import { PathModule } from "../../model/PathModule";
+import { Diff } from "../../Diff";
 
 describe("DefaultNullComparator", () => {
   test("diff null and null returns same", () => {
@@ -10,7 +11,6 @@ describe("DefaultNullComparator", () => {
   });
 
   test("diff null values through Diff class", () => {
-    const { Diff } = require("../../Diff");
     const left = '{"a":null}';
     const right = '{"a":null}';
 

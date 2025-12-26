@@ -13,9 +13,9 @@ export type { PrimitiveComparator } from "./algorithm/primitive/PrimitiveCompara
 export type { NullComparator } from "./algorithm/nulls/NullComparator";
 export type { OtherComparator } from "./algorithm/other/OtherComparator";
 
-export { SimpleObjectComparator } from "./algorithm/object/SimpleObjectComparator";
+export { UnionKeyObjectComparator } from "./algorithm/object/UnionKeyObjectComparator";
 export { LeftJoinObjectComparator } from "./algorithm/object/LeftJoinObjectComparator";
-export { SimpleArrayComparator } from "./algorithm/array/SimpleArrayComparator";
+export { SequentialArrayComparator } from "./algorithm/array/SequentialArrayComparator";
 export { SimilarArrayComparator } from "./algorithm/array/SimilarArrayComparator";
 export { DefaultPrimitiveComparator } from "./algorithm/primitive/DefaultPrimitiveComparator";
 export { DefaultNullComparator } from "./algorithm/nulls/DefaultNullComparator";

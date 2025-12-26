@@ -5,7 +5,7 @@ import { SimilarArrayComparator } from "./algorithm/array/SimilarArrayComparator
 import { DefaultNullComparator } from "./algorithm/nulls/DefaultNullComparator";
 import type { NullComparator } from "./algorithm/nulls/NullComparator";
 import type { ObjectComparator } from "./algorithm/object/ObjectComparator";
-import { SimpleObjectComparator } from "./algorithm/object/SimpleObjectComparator";
+import { UnionKeyObjectComparator } from "./algorithm/object/UnionKeyObjectComparator";
 import { DefaultOtherComparator } from "./algorithm/other/DefaultOtherComparator";
 import type { OtherComparator } from "./algorithm/other/OtherComparator";
 import { DefaultPrimitiveComparator } from "./algorithm/primitive/DefaultPrimitiveComparator";
@@ -75,7 +75,7 @@ export class Diff {
   }
 
   private defaultObjectComparator(): ObjectComparator {
-    return new SimpleObjectComparator();
+    return new UnionKeyObjectComparator();
   }
 
   private defaultArrayComparator(): ArrayComparator {

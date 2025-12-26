@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { Diff } from "../../Diff";
 import { AlgorithmEnum } from "../../AlgorithmEnum";
 
-describe("SimpleArrayComparator", () => {
+describe("SequentialArrayComparator", () => {
   test("diff arrays by index order", () => {
     const left = '[{"a":1},{"a":2},{"a":3}]';
     const right = '[{"a":3},{"a":2},{"a":1}]';
