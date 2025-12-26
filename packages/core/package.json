@@ -6,12 +6,13 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "@diffson/source": "./src/index.ts",
       "import": {
+        "@diffson/source": "./src/index.ts",
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
       "require": {
+        "@diffson/source": "./src/index.ts",
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }

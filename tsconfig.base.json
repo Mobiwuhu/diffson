@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "${configDir}/dist",
-    "rootDir": "${configDir}/src",
     "composite": true,
     "incremental": true,
     "declaration": true,
@@ -28,6 +27,7 @@
   },
   "exclude": [
     "${configDir}/dist",
-    "${configDir}/node_modules"
+    "${configDir}/node_modules",
+    "${configDir}/src/**/*.test.ts"
   ]
 }

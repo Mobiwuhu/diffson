@@ -10,8 +10,8 @@
   },
   "exports": {
     ".": {
-      "@diffson/source": "./src/index.tsx",
       "import": {
+        "@diffson/source": "./src/index.tsx",
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
