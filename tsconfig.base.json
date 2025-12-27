@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "${configDir}/dist",
+    "baseUrl": "${configDir}",
     "composite": true,
     "incremental": true,
     "declaration": true,
@@ -13,6 +14,11 @@
       "ESNext",
       "DOM"
     ],
+    "paths": {
+      "#*": [
+        "./src/*"
+      ]
+    },
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",

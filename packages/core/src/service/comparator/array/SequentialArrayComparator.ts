@@ -1,6 +1,6 @@
 import { AbstractArray } from "./AbstractArray";
 import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
+import type { PathTracker } from "#service/diff/PathTracker";
 import type { JsonArray } from "../../../contract/type";
 
 export class SequentialArrayComparator extends AbstractArray {

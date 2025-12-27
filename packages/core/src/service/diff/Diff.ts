@@ -1,7 +1,7 @@
 import { type JsonObject, type JsonValue, Result, SingleNodeDifference } from "../../contract/type";
 import { SPLIT_PATH, OBJECT_NULL, TYPE_MODIFY, TYPE_ADD, TYPE_DELETE } from "../../contract/constant";
 import { isJsonObject } from "../../util";
-import type { ObjectComparator } from "../comparator/object/ObjectComparator";
+import type { ObjectComparator } from "#service/comparator/object/ObjectComparator";
 import type { ArrayComparator } from "../comparator/array/ArrayComparator";
 import type { PrimitiveComparator } from "../comparator/primitive/PrimitiveComparator";
 import type { NullComparator } from "../comparator/nulls/NullComparator";
