@@ -34,9 +34,6 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true
   },
-  "include": [
-    "types/**/*.d.ts"
-  ],
   "exclude": [
     "${configDir}/dist",
     "${configDir}/node_modules",

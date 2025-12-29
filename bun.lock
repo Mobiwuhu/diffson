@@ -43,7 +43,6 @@
   },
   "catalog": {
     "@types/bun": "latest",
-    "@types/is-json": "latest",
     "@wendellhu/redi": "latest",
     "is-json": "latest",
     "typescript": "^5.7.0",

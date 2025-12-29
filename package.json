@@ -12,8 +12,7 @@
       "@types/bun": "latest",
       "typescript": "^5.7.0",
       "@wendellhu/redi": "latest",
-      "is-json": "latest",
-      "@types/is-json": "latest"
+      "is-json": "latest"
     }
   },
   "scripts": {
