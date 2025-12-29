@@ -33,7 +33,10 @@ export class DiffService implements IDiffService {
     primitiveComparator: new () => IPrimitiveComparator;
     nullComparator: new () => INullComparator;
     otherComparator: new () => IOtherComparator;
-  } = {
+  };
+
+  constructor(preset: PresetName = PresetName.FullSmart) {
+    this.config = {
       objectComparator: UnionKeyObjectComparator,
       arrayComparator: SimilarArrayComparator,
       primitiveComparator: DefaultPrimitiveComparator,
@@ -41,26 +44,23 @@ export class DiffService implements IDiffService {
       otherComparator: DefaultOtherComparator,
     };
 
-  preset(name: PresetName): this {
-    switch (name) {
-      case PresetName.Sequential:
+    switch (preset) {
+      case PresetName.FullOrdered:
         this.config.arrayComparator = SequentialArrayComparator;
         break;
-      case PresetName.LeftJoin:
+      case PresetName.LeftSmart:
         this.config.objectComparator = LeftJoinObjectComparator;
         break;
-      case PresetName.LeftJoinSequential:
+      case PresetName.LeftOrdered:
         this.config.objectComparator = LeftJoinObjectComparator;
         this.config.arrayComparator = SequentialArrayComparator;
         break;
-      case PresetName.Similar:
-      case PresetName.Default:
+      case PresetName.FullSmart:
       default:
         this.config.objectComparator = UnionKeyObjectComparator;
         this.config.arrayComparator = SimilarArrayComparator;
         break;
     }
-    return this;
   }
 
   withObjectComparator(cls: new (orchestrator: IComparatorOrchestrator) => IObjectComparator): this {
