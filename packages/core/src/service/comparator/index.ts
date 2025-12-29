@@ -1,4 +1,3 @@
-export * from "./Comparator";
 export * from "./ComparatorOrchestrator";
 export * from "./array";
 export * from "./object";

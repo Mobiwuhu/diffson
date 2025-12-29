@@ -1,40 +1,30 @@
-import type { ObjectComparator } from "./object/ObjectComparator";
-import type { ArrayComparator } from "./array/ArrayComparator";
-import type { PrimitiveComparator } from "./primitive/PrimitiveComparator";
-import type { NullComparator } from "./nulls/NullComparator";
-import type { OtherComparator } from "./other/OtherComparator";
+import { Inject } from "@wendellhu/redi";
+import {
+  type IComparatorOrchestrator,
+  type IObjectComparator,
+  IObjectComparator as IObjectComparatorToken,
+  type IArrayComparator,
+  IArrayComparator as IArrayComparatorToken,
+  type IPrimitiveComparator,
+  IPrimitiveComparator as IPrimitiveComparatorToken,
+  type INullComparator,
+  INullComparator as INullComparatorToken,
+  type IOtherComparator,
+  IOtherComparator as IOtherComparatorToken,
+  type JsonValue,
+} from "../../contract/type";
 import { DiffContext } from "../diff/DiffContext";
 import type { PathTracker } from "../diff/PathTracker";
-import type { JsonValue } from "../../contract/type";
-import {
-  isJsonObject,
-  isJsonArray,
-  isJsonPrimitive,
-  isJsonNull,
-} from "../../util";
+import { isJsonObject, isJsonArray, isJsonPrimitive, isJsonNull } from "../../util";
 
-export class ComparatorOrchestrator {
-  protected objectComparator: ObjectComparator;
-  protected arrayComparator: ArrayComparator;
-  protected primitiveComparator: PrimitiveComparator;
-  protected nullComparator: NullComparator;
-  protected otherComparator: OtherComparator;
-
+export class ComparatorOrchestrator implements IComparatorOrchestrator {
   constructor(
-    objectComparator: ObjectComparator,
-    arrayComparator: ArrayComparator,
-    primitiveComparator: PrimitiveComparator,
-    nullComparator: NullComparator,
-    otherComparator: OtherComparator
-  ) {
-    this.objectComparator = objectComparator;
-    this.arrayComparator = arrayComparator;
-    this.primitiveComparator = primitiveComparator;
-    this.nullComparator = nullComparator;
-    this.otherComparator = otherComparator;
-    objectComparator.constructComparatorOrchestrator(this);
-    arrayComparator.constructComparatorOrchestrator(this);
-  }
+    @Inject(IObjectComparatorToken) protected objectComparator: IObjectComparator,
+    @Inject(IArrayComparatorToken) protected arrayComparator: IArrayComparator,
+    @Inject(IPrimitiveComparatorToken) protected primitiveComparator: IPrimitiveComparator,
+    @Inject(INullComparatorToken) protected nullComparator: INullComparator,
+    @Inject(IOtherComparatorToken) protected otherComparator: IOtherComparator
+  ) {}
 
   diffElement(
     a: JsonValue | undefined,
@@ -54,7 +44,7 @@ export class ComparatorOrchestrator {
     }
   }
 
-  getArrayComparator(): ArrayComparator {
+  getArrayComparator(): IArrayComparator {
     return this.arrayComparator;
   }
 }

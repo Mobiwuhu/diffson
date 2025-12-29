@@ -1,21 +1,19 @@
-import type { ArrayComparator } from "./ArrayComparator";
-import type { ComparatorOrchestrator } from "../ComparatorOrchestrator";
+import { Inject } from "@wendellhu/redi";
+import type { IArrayComparator, IComparatorOrchestrator, JsonArray, JsonValue } from "../../../contract/type";
+import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
 import { DiffContext } from "../../diff/DiffContext";
 import type { PathTracker } from "../../diff/PathTracker";
-import type { JsonArray, JsonValue } from "../../../contract/type";
 import { DIFFERENT } from "../../../contract/constant";
 
-export abstract class AbstractArray implements ArrayComparator {
-  protected orchestrator!: ComparatorOrchestrator;
+export abstract class AbstractArray implements IArrayComparator {
+  constructor(
+    @Inject(IComparatorOrchestratorToken) protected orchestrator: IComparatorOrchestrator
+  ) {}
 
   abstract diffArray(a: JsonArray, b: JsonArray, pathTracker: PathTracker): DiffContext;
 
   diffElement(a: JsonValue | undefined, b: JsonValue | undefined, pathTracker: PathTracker): DiffContext {
     return this.orchestrator.diffElement(a, b, pathTracker);
-  }
-
-  constructComparatorOrchestrator(orchestrator: ComparatorOrchestrator): void {
-    this.orchestrator = orchestrator;
   }
 
   protected parentContextAddChildContext(parentResult: DiffContext, childResult: DiffContext): void {

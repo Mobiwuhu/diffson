@@ -1,12 +1,11 @@
-import type { OtherComparator } from "./OtherComparator";
+import type { IOtherComparator, JsonValue } from "../../../contract/type";
 import { DiffContext } from "../../diff/DiffContext";
 import type { PathTracker } from "../../diff/PathTracker";
 import { SingleNodeDifference } from "../../../contract/type";
 import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
 import { jsonElement2Str } from "../../../util";
-import type { JsonValue } from "../../../contract/type";
 
-export class DefaultOtherComparator implements OtherComparator {
+export class DefaultOtherComparator implements IOtherComparator {
   diff(a: JsonValue | undefined, b: JsonValue | undefined, pathTracker: PathTracker): DiffContext {
     const otherDiffContext = new DiffContext(DIFFERENT);
     const singleNodeDifferences: SingleNodeDifference[] = [];

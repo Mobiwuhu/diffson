@@ -1,11 +1,11 @@
-import type { PrimitiveComparator } from "./PrimitiveComparator";
+import type { IPrimitiveComparator } from "../../../contract/type";
 import { DiffContext } from "../../diff/DiffContext";
 import type { PathTracker } from "../../diff/PathTracker";
 import { SingleNodeDifference } from "../../../contract/type";
 import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
 import { jsonElement2Str } from "../../../util";
 
-export class DefaultPrimitiveComparator implements PrimitiveComparator {
+export class DefaultPrimitiveComparator implements IPrimitiveComparator {
   diff(a: string | number | boolean, b: string | number | boolean, pathTracker: PathTracker): DiffContext {
     const primitiveDiffContext = new DiffContext();
 

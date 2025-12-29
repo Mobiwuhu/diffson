@@ -9,8 +9,6 @@ function parseArgs(args: string[]) {
   const result: {
     json1?: string;
     json2?: string;
-    algorithm?: string;
-    ignore?: string[];
     help?: boolean;
     interactive?: boolean;
   } = {};
@@ -22,10 +20,6 @@ function parseArgs(args: string[]) {
       result.help = true;
     } else if (arg === "--interactive" || arg === "-I") {
       result.interactive = true;
-    } else if (arg === "--algorithm" || arg === "-a") {
-      result.algorithm = args[++i];
-    } else if (arg === "--ignore" || arg === "-i") {
-      result.ignore = args[++i]?.split(",");
     } else if (!result.json1) {
       result.json1 = arg;
     } else if (!result.json2) {
@@ -42,8 +36,6 @@ render(
   <App
     json1={parsed.json1}
     json2={parsed.json2}
-    algorithm={parsed.algorithm}
-    ignore={parsed.ignore}
     interactive={parsed.interactive}
   />
 );

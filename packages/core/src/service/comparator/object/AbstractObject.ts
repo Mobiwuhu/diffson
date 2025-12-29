@@ -1,21 +1,19 @@
-import type { ObjectComparator } from "./ObjectComparator";
-import type { ComparatorOrchestrator } from "../ComparatorOrchestrator";
+import { Inject } from "@wendellhu/redi";
+import type { IObjectComparator, IComparatorOrchestrator, JsonObject, JsonValue } from "../../../contract/type";
+import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
 import { DiffContext } from "../../diff/DiffContext";
 import type { PathTracker } from "../../diff/PathTracker";
-import type { JsonObject, JsonValue } from "../../../contract/type";
 import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
 
-export abstract class AbstractObject implements ObjectComparator {
-  protected orchestrator!: ComparatorOrchestrator;
+export abstract class AbstractObject implements IObjectComparator {
+  constructor(
+    @Inject(IComparatorOrchestratorToken) protected orchestrator: IComparatorOrchestrator
+  ) {}
 
   abstract diff(a: JsonObject, b: JsonObject, pathTracker: PathTracker): DiffContext;
 
   diffElement(a: JsonValue | undefined, b: JsonValue | undefined, pathTracker: PathTracker): DiffContext {
     return this.orchestrator.diffElement(a, b, pathTracker);
-  }
-
-  constructComparatorOrchestrator(orchestrator: ComparatorOrchestrator): void {
-    this.orchestrator = orchestrator;
   }
 
   protected parentContextAddChildContext(parentResult: DiffContext, childResult: DiffContext): void {

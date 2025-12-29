@@ -1,9 +1,17 @@
+import { Inject } from "@wendellhu/redi";
 import { AbstractArray } from "./AbstractArray";
 import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "#service/diff/PathTracker";
-import type { JsonArray } from "../../../contract/type";
+import type { PathTracker } from "../../diff/PathTracker";
+import type { JsonArray, IComparatorOrchestrator } from "../../../contract/type";
+import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
 
 export class SequentialArrayComparator extends AbstractArray {
+  constructor(
+    @Inject(IComparatorOrchestratorToken) orchestrator: IComparatorOrchestrator
+  ) {
+    super(orchestrator);
+  }
+
   diffArray(a: JsonArray, b: JsonArray, pathTracker: PathTracker): DiffContext {
     const arrayDiffContext = new DiffContext();
     const maxLength = Math.max(a.length, b.length);

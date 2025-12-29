@@ -1,12 +1,13 @@
 import { describe, it, expect } from "bun:test";
-import { Diff } from "../../diff/Diff";
+import { createDiffService } from "../../injector";
 
 describe("DefaultNullComparator", () => {
   it("should not report differences for null vs null", () => {
     const left = { value: null };
     const right = { value: null };
 
-    const results = Diff.of(left, right).compare();
+    const diffService = createDiffService();
+    const results = diffService.compare(left, right);
 
     expect(results).toEqual([]);
   });
@@ -15,7 +16,8 @@ describe("DefaultNullComparator", () => {
     const left = { value: null };
     const right = { value: 1 };
 
-    const results = Diff.of(left, right).compare();
+    const diffService = createDiffService();
+    const results = diffService.compare(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].left).toBe("null");
@@ -26,7 +28,8 @@ describe("DefaultNullComparator", () => {
     const left = { value: 1 };
     const right = { value: null };
 
-    const results = Diff.of(left, right).compare();
+    const diffService = createDiffService();
+    const results = diffService.compare(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].left).toBe("1");

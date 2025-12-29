@@ -5,12 +5,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "imports": {
-    "#*": [
-      "./src/*/index.ts",
-      "./src/*.ts",
-      "./src/*.tsx",
-      "./src/*"
-    ]
+    "#contract": "./src/contract/index.ts",
+    "#service": "./src/service/index.ts"
   },
   "exports": {
     ".": {
@@ -32,6 +28,9 @@
     "test": "bun test",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "@wendellhu/redi": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

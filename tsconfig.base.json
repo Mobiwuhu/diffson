@@ -16,6 +16,9 @@
     ],
     "paths": {
       "#*": [
+        "./src/*.ts",
+        "./src/*.tsx",
+        "./src/*/index.ts",
         "./src/*"
       ]
     },
@@ -26,6 +29,7 @@
     "esModuleInterop": true,
     "moduleResolution": "bundler",
     "skipLibCheck": true,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
