@@ -3,7 +3,21 @@ import type { JsonValue } from "./JsonTypes";
 import type { Result } from "./Result";
 
 export interface IDiffService {
-  compare(left: JsonValue, right: JsonValue): Result[];
+  /**
+   * Diff two JSON strings
+   * @param leftJson - Left JSON string
+   * @param rightJson - Right JSON string
+   * @returns Array of differences
+   */
+  diffJson(leftJson: string, rightJson: string): Result[];
+
+  /**
+   * Diff two JSON objects directly
+   * @param left - Left JSON value
+   * @param right - Right JSON value
+   * @returns Array of differences
+   */
+  diffElement(left: JsonValue, right: JsonValue): Result[];
 }
 
 export const IDiffService = createIdentifier<IDiffService>("IDiffService");

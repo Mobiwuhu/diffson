@@ -87,11 +87,30 @@ export class DiffService implements IDiffService {
     return this;
   }
 
-  compare(left: JsonValue, right: JsonValue): Result[] {
-    return this.compareWithOptions(left, right);
+  diffJson(leftJson: string, rightJson: string): Result[] {
+    let left: JsonValue;
+    let right: JsonValue;
+
+    try {
+      left = JSON.parse(leftJson);
+    } catch (error) {
+      throw new Error(`Failed to parse left JSON string: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
+    try {
+      right = JSON.parse(rightJson);
+    } catch (error) {
+      throw new Error(`Failed to parse right JSON string: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
+    return this.diffElement(left, right);
   }
 
-  compareWithOptions(
+  diffElement(left: JsonValue, right: JsonValue): Result[] {
+    return this.diffElementWithOptions(left, right);
+  }
+
+  diffElementWithOptions(
     left: JsonValue,
     right: JsonValue,
     options?: {

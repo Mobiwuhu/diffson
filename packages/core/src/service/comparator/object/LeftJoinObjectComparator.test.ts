@@ -36,7 +36,7 @@ describe("LeftJoinObjectComparator", () => {
     const right = { a: 1, b: 2, c: 3 };
 
     const diffService = createLeftJoinDiffService();
-    const results = diffService.compare(left, right);
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toEqual(1);
     expect(results[0].rightPath).toBe("c");
@@ -48,7 +48,7 @@ describe("LeftJoinObjectComparator", () => {
     const right = { a: 2, b: 2, c: 3 };
 
     const diffService = createLeftJoinDiffService();
-    const results = diffService.compare(left, right);
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(2);
     expect(results[0].leftPath).toBe("a");
@@ -62,7 +62,7 @@ describe("LeftJoinObjectComparator", () => {
     const right = { a: 1 };
 
     const diffService = createLeftJoinDiffService();
-    const results = diffService.compare(left, right);
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].leftPath).toBe("b");

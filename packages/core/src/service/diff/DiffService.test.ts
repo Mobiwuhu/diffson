@@ -10,7 +10,7 @@ describe("DiffService", () => {
       const right = { name: "test", value: 1 };
 
       const diffService = new DiffService();
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
 
       expect(results).toEqual([]);
     });
@@ -20,7 +20,7 @@ describe("DiffService", () => {
       const right = { name: "test", value: 2 };
 
       const diffService = new DiffService();
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
 
       expect(results.length).toBe(1);
       expect(results[0].diffType).toBe("MODIFY");
@@ -36,7 +36,7 @@ describe("DiffService", () => {
       const right = { items: [1, 4, 3] };
 
       const diffService = new DiffService().withArrayComparator(SequentialArrayComparator);
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
       console.log(results);
 
       expect(results.length).toBe(1);
@@ -51,7 +51,7 @@ describe("DiffService", () => {
       // First comparison with default comparator
       const left1 = { items: [1, 2] };
       const right1 = { items: [2, 1] };
-      const results1 = diffService.compare(left1, right1);
+      const results1 = diffService.diffElement(left1, right1);
 
       // Should match similar elements (default behavior)
       expect(results1).toEqual([]);
@@ -60,7 +60,7 @@ describe("DiffService", () => {
       diffService.withArrayComparator(SequentialArrayComparator);
 
       // Second comparison with sequential comparator
-      const results2 = diffService.compare(left1, right1);
+      const results2 = diffService.diffElement(left1, right1);
 
       // Should detect differences at each index
       expect(results2.length).toBe(2);
@@ -73,7 +73,7 @@ describe("DiffService", () => {
       const right = { items: [1, 4, 3] };
 
       const diffService = new DiffService().preset(PresetName.Sequential);
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
 
       expect(results.length).toBe(1);
       expect(results[0].leftPath).toBe("items.[1]");
@@ -84,7 +84,7 @@ describe("DiffService", () => {
       const right = { a: 1, b: 2, c: 3 };
 
       const diffService = new DiffService().preset(PresetName.LeftJoin);
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
 
       // LeftJoin only compares keys from left object
       expect(results).toEqual([]);
@@ -95,7 +95,7 @@ describe("DiffService", () => {
       const right = { a: 1, b: 2, items: [2, 1] };
 
       const diffService = new DiffService().preset(PresetName.LeftJoinSequential);
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
 
       // Should use leftJoin for objects and sequential for arrays
       expect(results.length).toBe(2); // Two array differences
@@ -110,7 +110,7 @@ describe("DiffService", () => {
       const right = { name: "test", timestamp: 2000 };
 
       const diffService = new DiffService();
-      const results = diffService.compareWithOptions(left, right, {
+      const results = diffService.diffElementWithOptions(left, right, {
         noisePath: ["timestamp"],
       });
 
@@ -122,7 +122,7 @@ describe("DiffService", () => {
       const right = { name: "test", special: "value2" };
 
       const diffService = new DiffService();
-      const results = diffService.compareWithOptions(left, right, {
+      const results = diffService.diffElementWithOptions(left, right, {
         specialPath: ["special"],
       });
 
@@ -140,7 +140,7 @@ describe("DiffService", () => {
       const left = { a: 1, items: [1, 2] };
       const right = { a: 1, b: 2, items: [2, 1] };
 
-      const results = diffService.compare(left, right);
+      const results = diffService.diffElement(left, right);
 
       // Should use both custom comparators
       expect(results.length).toBeGreaterThan(0);

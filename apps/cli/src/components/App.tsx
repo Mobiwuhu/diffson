@@ -1,5 +1,5 @@
 import { Box, Text } from "ink";
-import { createDiffService, type Result } from "@diffson/core";
+import { DiffService, type Result } from "@diffson/core";
 import { DiffResult } from "./DiffResult";
 import { InteractiveMode } from "./InteractiveMode";
 
@@ -43,8 +43,8 @@ export function App({ json1, json2, interactive }: AppProps) {
   try {
     const left = JSON.parse(json1);
     const right = JSON.parse(json2);
-    const diffService = createDiffService();
-    results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    results = diffService.diffElement(left, right);
   } catch (e) {
     error = (e as Error).message;
     results = [];

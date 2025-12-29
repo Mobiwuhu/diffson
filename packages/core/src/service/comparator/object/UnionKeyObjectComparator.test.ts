@@ -1,13 +1,13 @@
 import { describe, it, expect } from "bun:test";
-import { createDiffService } from "../../injector";
+import { DiffService } from "../../diff/DiffService";
 
 describe("UnionKeyObjectComparator", () => {
   it("should compare all keys from both objects", () => {
     const left = { a: 1, b: 2 };
     const right = { b: 2, c: 3 };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(2);
 

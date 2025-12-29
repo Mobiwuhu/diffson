@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Text, useInput, useApp } from "ink";
 import TextInput from "ink-text-input";
-import { createDiffService, type Result } from "@diffson/core";
+import { DiffService, type Result } from "@diffson/core";
 import { DiffResult } from "./DiffResult.js";
 
 type Step = "json1" | "json2" | "result";
@@ -40,8 +40,8 @@ export function InteractiveMode() {
     try {
       const left = JSON.parse(json1);
       const right = JSON.parse(value);
-      const diffService = createDiffService();
-      const diff = diffService.compare(left, right);
+      const diffService = new DiffService();
+      const diff = diffService.diffElement(left, right);
       setResults(diff);
       setError(null);
     } catch (e) {

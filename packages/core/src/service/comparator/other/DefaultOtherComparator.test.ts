@@ -1,13 +1,13 @@
 import { describe, it, expect } from "bun:test";
-import { createDiffService } from "../../injector";
+import { DiffService } from "../../diff/DiffService";
 
 describe("DefaultOtherComparator", () => {
   it("should detect type changes from object to array", () => {
     const left = { value: { a: 1 } };
     const right = { value: [1, 2, 3] };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("MODIFY");
@@ -17,8 +17,8 @@ describe("DefaultOtherComparator", () => {
     const left = { value: [1, 2, 3] };
     const right = { value: 123 };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("MODIFY");
@@ -28,8 +28,8 @@ describe("DefaultOtherComparator", () => {
     const left = {};
     const right = { value: 1 };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("ADD");
@@ -39,8 +39,8 @@ describe("DefaultOtherComparator", () => {
     const left = { value: 1 };
     const right = {};
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("DELETE");

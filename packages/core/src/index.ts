@@ -10,8 +10,5 @@ export {
   TYPE_MODIFY,
 } from "./contract/constant";
 
-// Public API - Factory
-export { createDiffService } from "./service";
-
-// Advanced API - for custom injector configuration
-export { createDiffInjector, Injector } from "./service";
+// Public API - Service
+export { DiffService } from "./service";

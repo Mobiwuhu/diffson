@@ -1,13 +1,13 @@
 import { describe, it, expect } from "bun:test";
-import { createDiffService } from "../../injector";
+import { DiffService } from "../../diff/DiffService";
 
 describe("SimilarArrayComparator", () => {
   it("should match similar elements", () => {
     const left = { items: [{ id: 1, name: "a" }, { id: 2, name: "b" }] };
     const right = { items: [{ id: 2, name: "b" }, { id: 1, name: "a" }] };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results).toEqual([]);
   });
@@ -16,8 +16,8 @@ describe("SimilarArrayComparator", () => {
     const left = { items: [{ id: 1, name: "a" }] };
     const right = { items: [{ id: 1, name: "b" }] };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].left).toBe("a");
@@ -28,8 +28,8 @@ describe("SimilarArrayComparator", () => {
     const left = { items: [{ id: 1 }] };
     const right = { items: [{ id: 1 }, { id: 2 }] };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("ADD");

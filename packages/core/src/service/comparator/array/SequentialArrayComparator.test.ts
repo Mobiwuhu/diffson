@@ -12,7 +12,7 @@ describe("SequentialArrayComparator", () => {
     const right = { items: [1, 4, 3] };
 
     const diffService = createSequentialDiffService();
-    const results = diffService.compare(left, right);
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].leftPath).toBe("items.[1]");
@@ -25,7 +25,7 @@ describe("SequentialArrayComparator", () => {
     const right = { items: [1, 2, 3] };
 
     const diffService = createSequentialDiffService();
-    const results = diffService.compare(left, right);
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("ADD");
@@ -37,7 +37,7 @@ describe("SequentialArrayComparator", () => {
     const right = { items: [1, 2] };
 
     const diffService = createSequentialDiffService();
-    const results = diffService.compare(left, right);
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].diffType).toBe("DELETE");

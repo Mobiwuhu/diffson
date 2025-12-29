@@ -1,13 +1,13 @@
 import { describe, it, expect } from "bun:test";
-import { createDiffService } from "../../injector";
+import { DiffService } from "../../diff/DiffService";
 
 describe("DefaultPrimitiveComparator", () => {
   it("should detect string changes", () => {
     const left = { value: "hello" };
     const right = { value: "world" };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].left).toBe("hello");
@@ -18,8 +18,8 @@ describe("DefaultPrimitiveComparator", () => {
     const left = { value: 1 };
     const right = { value: 2 };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].left).toBe("1");
@@ -30,8 +30,8 @@ describe("DefaultPrimitiveComparator", () => {
     const left = { value: true };
     const right = { value: false };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results.length).toBe(1);
     expect(results[0].left).toBe("true");
@@ -42,8 +42,8 @@ describe("DefaultPrimitiveComparator", () => {
     const left = { value: "same" };
     const right = { value: "same" };
 
-    const diffService = createDiffService();
-    const results = diffService.compare(left, right);
+    const diffService = new DiffService();
+    const results = diffService.diffElement(left, right);
 
     expect(results).toEqual([]);
   });
