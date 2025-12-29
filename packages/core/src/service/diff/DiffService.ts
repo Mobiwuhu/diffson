@@ -28,11 +28,11 @@ import { DefaultOtherComparator } from "../comparator/other/DefaultOtherComparat
 
 export class DiffService implements IDiffService {
   private config: {
-    objectComparator: new (...args: any[]) => any;
-    arrayComparator: new (...args: any[]) => any;
-    primitiveComparator: new (...args: any[]) => any;
-    nullComparator: new (...args: any[]) => any;
-    otherComparator: new (...args: any[]) => any;
+    objectComparator: new (orchestrator: IComparatorOrchestrator) => IObjectComparator;
+    arrayComparator: new (orchestrator: IComparatorOrchestrator) => IArrayComparator;
+    primitiveComparator: new () => IPrimitiveComparator;
+    nullComparator: new () => INullComparator;
+    otherComparator: new () => IOtherComparator;
   } = {
       objectComparator: UnionKeyObjectComparator,
       arrayComparator: SimilarArrayComparator,
@@ -63,27 +63,27 @@ export class DiffService implements IDiffService {
     return this;
   }
 
-  withObjectComparator(cls: new (...args: any[]) => any): this {
+  withObjectComparator(cls: new (orchestrator: IComparatorOrchestrator) => IObjectComparator): this {
     this.config.objectComparator = cls;
     return this;
   }
 
-  withArrayComparator(cls: new (...args: any[]) => any): this {
+  withArrayComparator(cls: new (orchestrator: IComparatorOrchestrator) => IArrayComparator): this {
     this.config.arrayComparator = cls;
     return this;
   }
 
-  withPrimitiveComparator(cls: new (...args: any[]) => any): this {
+  withPrimitiveComparator(cls: new () => IPrimitiveComparator): this {
     this.config.primitiveComparator = cls;
     return this;
   }
 
-  withNullComparator(cls: new (...args: any[]) => any): this {
+  withNullComparator(cls: new () => INullComparator): this {
     this.config.nullComparator = cls;
     return this;
   }
 
-  withOtherComparator(cls: new (...args: any[]) => any): this {
+  withOtherComparator(cls: new () => IOtherComparator): this {
     this.config.otherComparator = cls;
     return this;
   }
