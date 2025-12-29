@@ -110,7 +110,7 @@ describe("DiffService", () => {
       const right = { name: "test", timestamp: 2000 };
 
       const diffService = new DiffService();
-      const results = diffService.diffElementWithOptions(left, right, {
+      const results = diffService.diffElement(left, right, {
         noisePath: ["timestamp"],
       });
 
@@ -122,7 +122,7 @@ describe("DiffService", () => {
       const right = { name: "test", special: "value2" };
 
       const diffService = new DiffService();
-      const results = diffService.diffElementWithOptions(left, right, {
+      const results = diffService.diffElement(left, right, {
         specialPath: ["special"],
       });
 

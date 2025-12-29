@@ -1,3 +1,4 @@
+import isJSON from "is-json";
 import { Injector } from "@wendellhu/redi";
 import {
   type JsonValue,
@@ -87,7 +88,11 @@ export class DiffService implements IDiffService {
     return this;
   }
 
-  diffJson(leftJson: string, rightJson: string): Result[] {
+  diffJson(leftJson: string, rightJson: string, options?: {
+    noisePath?: string[];
+    specialPath?: string[];
+    parseNestedJson?: boolean;
+  }): Result[] {
     let left: JsonValue;
     let right: JsonValue;
 
@@ -103,14 +108,16 @@ export class DiffService implements IDiffService {
       throw new Error(`Failed to parse right JSON string: ${error instanceof Error ? error.message : String(error)}`);
     }
 
-    return this.diffElement(left, right);
+    // 如果启用递归解析嵌套 JSON
+    if (options?.parseNestedJson) {
+      left = this.parseNestedJsonStrings(left);
+      right = this.parseNestedJsonStrings(right);
+    }
+
+    return this.diffElement(left, right, options);
   }
 
-  diffElement(left: JsonValue, right: JsonValue): Result[] {
-    return this.diffElementWithOptions(left, right);
-  }
-
-  diffElementWithOptions(
+  diffElement(
     left: JsonValue,
     right: JsonValue,
     options?: {
@@ -196,5 +203,41 @@ export class DiffService implements IDiffService {
       result.push(parts.join("."));
     }
     return result;
+  }
+
+  private parseNestedJsonStrings(value: JsonValue): JsonValue {
+    // 如果是字符串，尝试解析为 JSON
+    if (typeof value === "string") {
+      if (isJSON(value)) {
+        try {
+          const parsed = JSON.parse(value);
+          // 递归处理解析后的值
+          return this.parseNestedJsonStrings(parsed);
+        } catch {
+          // 如果解析失败，返回原字符串
+          return value;
+        }
+      }
+      return value;
+    }
+
+    // 如果是数组，递归处理每个元素
+    if (Array.isArray(value)) {
+      return value.map(item => this.parseNestedJsonStrings(item));
+    }
+
+    // 如果是对象，递归处理每个属性值
+    if (typeof value === "object" && value !== null) {
+      const result: Record<string, JsonValue> = {};
+      for (const key in value) {
+        if (Object.prototype.hasOwnProperty.call(value, key)) {
+          result[key] = this.parseNestedJsonStrings(value[key]);
+        }
+      }
+      return result;
+    }
+
+    // 其他类型（number, boolean, null）直接返回
+    return value;
   }
 }

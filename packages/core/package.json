@@ -30,7 +30,8 @@
     "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
-    "@wendellhu/redi": "catalog:"
+    "@wendellhu/redi": "catalog:",
+    "is-json": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",

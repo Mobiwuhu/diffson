@@ -9,7 +9,10 @@ export interface IDiffService {
    * @param rightJson - Right JSON string
    * @returns Array of differences
    */
-  diffJson(leftJson: string, rightJson: string): Result[];
+  diffJson(leftJson: string, rightJson: string, options?: {
+    noisePath?: string[];
+    specialPath?: string[];
+  }): Result[];
 
   /**
    * Diff two JSON objects directly
@@ -17,7 +20,10 @@ export interface IDiffService {
    * @param right - Right JSON value
    * @returns Array of differences
    */
-  diffElement(left: JsonValue, right: JsonValue): Result[];
+  diffElement(left: JsonValue, right: JsonValue, options?: {
+    noisePath?: string[];
+    specialPath?: string[];
+  }): Result[];
 }
 
 export const IDiffService = createIdentifier<IDiffService>("IDiffService");
