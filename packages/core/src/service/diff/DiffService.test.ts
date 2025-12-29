@@ -1,6 +1,7 @@
 import { describe, it, expect } from "bun:test";
 import { DiffService } from "./DiffService";
 import { LeftJoinObjectComparator, SequentialArrayComparator } from "#service";
+import { PresetName } from "#contract";
 
 describe("DiffService", () => {
   describe("basic comparison", () => {
@@ -71,7 +72,7 @@ describe("DiffService", () => {
       const left = { items: [1, 2, 3] };
       const right = { items: [1, 4, 3] };
 
-      const diffService = new DiffService().preset("sequential");
+      const diffService = new DiffService().preset(PresetName.Sequential);
       const results = diffService.compare(left, right);
 
       expect(results.length).toBe(1);
@@ -82,7 +83,7 @@ describe("DiffService", () => {
       const left = { a: 1, b: 2 };
       const right = { a: 1, b: 2, c: 3 };
 
-      const diffService = new DiffService().preset("leftJoin");
+      const diffService = new DiffService().preset(PresetName.LeftJoin);
       const results = diffService.compare(left, right);
 
       // LeftJoin only compares keys from left object
@@ -93,7 +94,7 @@ describe("DiffService", () => {
       const left = { a: 1, items: [1, 2] };
       const right = { a: 1, b: 2, items: [2, 1] };
 
-      const diffService = new DiffService().preset("leftJoinSequential");
+      const diffService = new DiffService().preset(PresetName.LeftJoinSequential);
       const results = diffService.compare(left, right);
 
       // Should use leftJoin for objects and sequential for arrays

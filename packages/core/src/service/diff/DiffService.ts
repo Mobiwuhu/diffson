@@ -11,6 +11,7 @@ import {
   INullComparator,
   IOtherComparator,
   type IComparatorOrchestrator as IComparatorOrchestratorType,
+  PresetName,
 } from "#contract";
 import { SPLIT_PATH, OBJECT_NULL, TYPE_MODIFY, TYPE_ADD, TYPE_DELETE } from "#contract";
 import { DiffContext } from "./DiffContext";
@@ -23,8 +24,6 @@ import { SequentialArrayComparator } from "../comparator/array/SequentialArrayCo
 import { DefaultPrimitiveComparator } from "../comparator/primitive/DefaultPrimitiveComparator";
 import { DefaultNullComparator } from "../comparator/nulls/DefaultNullComparator";
 import { DefaultOtherComparator } from "../comparator/other/DefaultOtherComparator";
-
-export type PresetName = "default" | "similar" | "sequential" | "leftJoin" | "leftJoinSequential";
 
 export class DiffService implements IDiffService {
   private config: {
@@ -43,18 +42,18 @@ export class DiffService implements IDiffService {
 
   preset(name: PresetName): this {
     switch (name) {
-      case "sequential":
+      case PresetName.Sequential:
         this.config.arrayComparator = SequentialArrayComparator;
         break;
-      case "leftJoin":
+      case PresetName.LeftJoin:
         this.config.objectComparator = LeftJoinObjectComparator;
         break;
-      case "leftJoinSequential":
+      case PresetName.LeftJoinSequential:
         this.config.objectComparator = LeftJoinObjectComparator;
         this.config.arrayComparator = SequentialArrayComparator;
         break;
-      case "similar":
-      case "default":
+      case PresetName.Similar:
+      case PresetName.Default:
       default:
         this.config.objectComparator = UnionKeyObjectComparator;
         this.config.arrayComparator = SimilarArrayComparator;

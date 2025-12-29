@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "${configDir}/dist",
-    "baseUrl": "${configDir}",
     "composite": true,
     "incremental": true,
     "declaration": true,
