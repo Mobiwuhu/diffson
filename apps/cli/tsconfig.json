@@ -2,14 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "include": [
     "src/**/*",
-    "../../types/**/*.d.ts"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "typeRoots": [
-      "../../types",
-      "./node_modules/@types"
-    ]
+    "types": [
+      "bun",
+      "../../types/is-json.d.ts"
+    ],
   }
 }
