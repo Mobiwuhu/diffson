@@ -11,6 +11,8 @@
     "catalog": {
       "@types/bun": "latest",
       "typescript": "^5.7.0",
+      "turbo": "^2",
+      "@clack/prompts": "^0.11.0",
       "@wendellhu/redi": "latest",
       "is-json": "latest"
     }
@@ -25,7 +27,7 @@
   },
   "devDependencies": {
     "@types/bun": "catalog:",
-    "turbo": "^2",
+    "turbo": "catalog:",
     "typescript": "catalog:"
   }
 }

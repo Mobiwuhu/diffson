@@ -4,9 +4,26 @@ import { writeFileSync } from "fs";
 import { formatJsonOutput } from "./utils";
 import { getJsonContent, filterResults } from "./utils";
 import { DiffService, PresetName, type Result } from "@diffson/core";
+import { runInteractiveMode } from "./interactive";
 
 const args = process.argv.slice(2);
 const parsed = parseArgs(args);
+
+/**
+ * 判断是否应该进入交互模式
+ * 如果有实际的操作参数（file1/file2/json1/json2），走命令行模式
+ * 否则默认进入交互模式
+ */
+function shouldRunInteractiveMode(): boolean {
+  // 如果显式指定 --interactive，走交互模式
+  if (parsed.interactive) return true;
+
+  // 如果有实际的操作参数，走命令行模式
+  if (parsed.file1 || parsed.file2 || parsed.json1 || parsed.json2) return false;
+
+  // 否则默认进入交互模式
+  return true;
+}
 
 function parsePreset(preset: string): PresetName {
   switch (preset.toLowerCase()) {
@@ -29,7 +46,10 @@ function showHelp(): void {
   console.log(`
  🔍 Diffson - JSON Diff Tool
 
- Usage: diffson <json1> <json2> [options]
+ Usage:
+   diffson                        Interactive mode (default)
+   diffson <json1> <json2>        Compare two JSON strings
+   diffson [options]               Compare JSON from files or with options
 
  Positional Arguments:
    json1                  First JSON string (or use --file1)
@@ -41,19 +61,42 @@ function showHelp(): void {
    -p, --preset <name>     Comparison preset (fullSmart, fullOrdered, leftSmart, leftOrdered)
    --format <type>         Output format: text or json (default: text)
    --filter <type>        Filter by diff type: add, delete, modify (comma-separated)
+   --parse-nested-json     Parse nested JSON strings (recursive)
+   --noise-path <paths>    Ignore specific paths (comma-separated, array indices auto-filtered)
+   --special-path <paths>  Mark special paths even if values match (comma-separated)
    -o, --output <path>    Write output to file
    --color, --no-color     Enable or disable colored output
-   -I, --interactive       Interactive mode
    -v, --version           Show version number
    -h, --help              Show help
 
+ Path Format:
+   Use '.' to separate object fields. Array indices [0], [1] are auto-filtered in matching:
+   - Object field:       data.timestamp
+   - Array element field: items.name  (matches items.[0].name, items.[1].name, etc.)
+
  Examples:
+   # Interactive mode
+   diffson
+
+   # Compare JSON strings
    diffson '{"a":1}' '{"a":2}'
-   diffson --file1 data1.json --file2 data2.json
    diffson '{"a":1}' '{"b":1}' --filter add
+
+   # Compare JSON files
+   diffson --file1 data1.json --file2 data2.json
+
+   # With noise paths (ignore array elements' name fields)
+   diffson --file1 data1.json --file2 data2.json --noise-path items.name
+
+   # With special paths
+   diffson --file1 data1.json --file2 data2.json --special-path config.settings
+
+   # With nested JSON parsing
+   diffson '{"data":"{\\"nested\\":\\"value\\"}"}' '{"data":"{\\"nested\\":\\"value2\\"}"}' --parse-nested-json
+
+   # With options
    diffson --format json --file1 data.json --file2 new.json
    diffson --preset fullOrdered file1.json file2.json
-   diffson --interactive
 `);
 }
 
@@ -106,7 +149,11 @@ function performDiff(): void {
 
     const presetName = parsed.preset ? parsePreset(parsed.preset) : PresetName.FullSmart;
     const diffService = new DiffService(presetName);
-    let results = diffService.diffElement(left, right);
+    let results = diffService.diffElement(left, right, {
+      noisePath: parsed.noisePath || [],
+      specialPath: parsed.specialPath || [],
+      parseNestedJson: parsed.parseNestedJson,
+    });
 
     if (parsed.filter) {
       results = filterResults(results, parsed.filter);
@@ -140,11 +187,11 @@ if (parsed.version) {
   process.exit(0);
 }
 
-if (parsed.interactive) {
-  // Interactive mode is handled by interactive.ts
-  console.log("Interactive mode is available via 'diffson-interactive' command\n");
-  console.log("Run: diffson-interactive\n");
-  process.exit(0);
+// 判断运行模式
+if (shouldRunInteractiveMode()) {
+  // 交互模式
+  await runInteractiveMode();
+} else {
+  // 命令行模式
+  performDiff();
 }
-
-performDiff();

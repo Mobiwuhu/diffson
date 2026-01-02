@@ -1,70 +1,24 @@
 #!/usr/bin/env bun
+import {
+  intro,
+  outro,
+  text,
+  select,
+  confirm,
+  spinner,
+  isCancel,
+  cancel,
+  log,
+} from "@clack/prompts";
 import { DiffService, PresetName, type Result } from "@diffson/core";
 
-interface Config {
+export interface Config {
   json1: string;
   json2: string;
   preset: PresetName;
   parseNestedJson: boolean;
   noisePaths: string[];
   specialPaths: string[];
-}
-
-async function runGumCommand(cmd: string): Promise<string> {
-  const process = Bun.spawn({
-    cmd: ["bash", "-c", cmd],
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  await process.exited;
-
-  let stdout = "";
-  if (process.stdout) {
-    const reader = process.stdout.getReader();
-    const { value, done } = await reader.read();
-    if (value) stdout = new TextDecoder().decode(value);
-  }
-
-  return stdout || "";
-}
-
-async function getJsonInput(prompt: string): Promise<string> {
-  const cmd = `gum write --placeholder "${prompt}" --height 15 --header "按 Ctrl+D 完成输入"`;
-  const result = await runGumCommand(cmd);
-  return result.trim();
-}
-
-async function getPreset(): Promise<PresetName> {
-  const cmd = `gum choose "Full Smart (智能比较 - 推荐)" "Full Ordered (顺序敏感)" "Left Smart (仅比较左侧)" "Left Ordered (仅左侧顺序)" --cursor "Full Smart (智能比较 - 推荐)" --height 4`;
-  const result = await runGumCommand(cmd);
-  const selected = result.trim();
-
-  switch (selected) {
-    case "Full Smart (智能比较 - 推荐)":
-      return PresetName.FullSmart;
-    case "Full Ordered (顺序敏感)":
-      return PresetName.FullOrdered;
-    case "Left Smart (仅比较左侧)":
-      return PresetName.LeftSmart;
-    case "Left Ordered (仅左侧顺序)":
-      return PresetName.LeftOrdered;
-    default:
-      return PresetName.FullSmart;
-  }
-}
-
-async function getNestedJsonChoice(): Promise<boolean> {
-  const cmd = `gum confirm "是否解析嵌套的 JSON 字符串？" --default=false --affirmative="Yes" --negative="No"`;
-  const result = await runGumCommand(cmd);
-  return result.trim() === "true";
-}
-
-async function getPaths(prompt: string): Promise<string[]> {
-  const cmd = `gum input --placeholder "${prompt}" --width 50`;
-  const result = await runGumCommand(cmd);
-  const trimmed = result.trim();
-  if (!trimmed) return [];
-  return trimmed.split(",").map((p: string) => p.trim());
 }
 
 function validateJson(json: string): boolean {
@@ -76,59 +30,35 @@ function validateJson(json: string): boolean {
   }
 }
 
-function renderResults(results: Result[]): void {
+function renderResults(results: Result[]): string {
   if (results.length === 0) {
-    console.log("✓ No differences found\n");
-    return;
+    return "✓ 未发现差异\n";
   }
 
-  let output = `\nFound ${results.length} difference${results.length > 1 ? "s" : ""}:\n\n`;
-
-  for (const item of results) {
-    const symbol = item.diffType === "ADD" ? "+" : item.diffType === "DELETE" ? "-" : "~";
-    const color = item.diffType === "ADD" ? "#00ff00" : item.diffType === "DELETE" ? "#ff0000" : "#ffff00";
-    const path = item.leftPath ?? item.rightPath ?? "(root)";
-
-    output += `${symbol} ${path}\n`;
-
-    if (item.diffType === "DELETE") {
-      output += `    - ${String(item.left)}\n`;
-    } else if (item.diffType === "ADD") {
-      output += `    + ${String(item.right)}\n`;
-    } else if (item.diffType === "MODIFY") {
-      output += `    - ${String(item.left)}\n`;
-      output += `    + ${String(item.right)}\n`;
-    }
-
-    output += "\n";
-  }
-
-  console.log(output);
-}
-
-async function showResults(results: Result[]): Promise<string> {
-  renderResults(results);
-
-  const cmd = `gum choose "🔄 重新开始" "📋 复制结果到剪贴板" "💾 保存结果到文件" "🚪 退出" --cursor "🔄 重新开始" --height 4`;
-  const result = await runGumCommand(cmd);
-  return result.trim();
+  return JSON.stringify(results, null, 2);
 }
 
 async function saveResults(results: Result[]): Promise<void> {
-  const cmd = `gum input --placeholder "输入输出文件路径（例如：diff-result.json）" --width 50 --value "diff-result.json"`;
-  const result = await runGumCommand(cmd);
-  const path = result.trim();
+  const path = await text({
+    message: "输入输出文件路径",
+    placeholder: "diff-result.json",
+    defaultValue: "diff-result.json",
+  });
+
+  if (isCancel(path)) {
+    return;
+  }
 
   if (!path) {
-    console.log("已取消保存\n");
+    log.info("已取消保存");
     return;
   }
 
   try {
     await Bun.write(path, JSON.stringify(results, null, 2));
-    console.log(`结果已保存到 ${path}\n`);
+    log.success(`结果已保存到 ${path}`);
   } catch (error) {
-    console.log(`保存失败: ${error}\n`);
+    log.error(`保存失败: ${error}`);
   }
 }
 
@@ -144,121 +74,212 @@ async function copyToClipboard(results: Result[]): Promise<void> {
     await process.stdin?.write(json);
     await process.stdin?.end();
     await process.exited;
-    console.log("结果已复制到剪贴板\n");
+    log.success("结果已复制到剪贴板");
   } catch (error) {
-    console.log(`复制失败: ${error}\n`);
-    console.log("提示: 在 macOS 上需要安装 pbcopy\n");
+    log.error(`复制失败: ${error}`);
+    log.message("提示: 在 macOS 上需要 pbcopy 支持");
   }
 }
 
 async function main(): Promise<void> {
-  console.clear();
-  console.log("🔍 Diffson - 交互式 JSON Diff 工具\n");
+  intro("🔍 Diffson - 交互式 JSON Diff 工具");
 
+  mainLoop:
   while (true) {
     try {
-      // Step 1: Get first JSON
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("步骤 1/6: 输入第一个 JSON");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+      // Step 1: Get JSON inputs (only once per session)
+      const jsonInputs = await (async () => {
+        // Get first JSON
+        let json1 = await text({
+          message: "请粘贴第一个 JSON",
+          placeholder: '{"key": "value"}',
+          validate: (value) => {
+            if (!value) return "JSON 不能为空";
+            if (!validateJson(value)) return "JSON 格式错误";
+          },
+        });
 
-      let json1 = await getJsonInput("请粘贴第一个 JSON");
-      while (!validateJson(json1)) {
-        console.log("❌ JSON 格式错误，请重新输入\n");
-        json1 = await getJsonInput("请粘贴第一个 JSON");
-      }
+        if (isCancel(json1)) {
+          cancel("操作已取消");
+          process.exit(0);
+        }
 
-      // Step 2: Get second JSON
-      console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("步骤 2/6: 输入第二个 JSON");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        // Get second JSON
+        let json2 = await text({
+          message: "请粘贴第二个 JSON",
+          placeholder: '{"key": "value"}',
+          validate: (value) => {
+            if (!value) return "JSON 不能为空";
+            if (!validateJson(value)) return "JSON 格式错误";
+          },
+        });
 
-      let json2 = await getJsonInput("请粘贴第二个 JSON");
-      while (!validateJson(json2)) {
-        console.log("❌ JSON 格式错误，请重新输入\n");
-        json2 = await getJsonInput("请粘贴第二个 JSON");
-      }
+        if (isCancel(json2)) {
+          cancel("操作已取消");
+          process.exit(0);
+        }
 
-      // Step 3: Choose preset
-      console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("步骤 3/6: 选择比较预设");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+        return {
+          json1: json1!,
+          json2: json2!,
+        };
+      })();
 
-      const preset = await getPreset();
+      // Step 2: Configuration and result loop (can repeat without re-entering JSON)
+      while (true) {
+        // Step 2a: Get configuration
+        const config = await (async () => {
+          // Choose preset
+          const preset = await select({
+            message: "选择比较预设",
+            options: [
+              { value: PresetName.FullSmart, label: "Full Smart (智能比较 - 推荐)", hint: "推荐使用" },
+              { value: PresetName.FullOrdered, label: "Full Ordered (顺序敏感)" },
+              { value: PresetName.LeftSmart, label: "Left Smart (仅比较左侧)" },
+              { value: PresetName.LeftOrdered, label: "Left Ordered (仅左侧顺序)" },
+            ],
+            initialValue: PresetName.FullSmart,
+          });
 
-      // Step 4: Parse nested JSON
-      console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("步骤 4/6: 选择是否解析嵌套 JSON");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+          if (isCancel(preset)) {
+            cancel("操作已取消");
+            process.exit(0);
+          }
 
-      const parseNestedJson = await getNestedJsonChoice();
+          // Parse nested JSON
+          const parseNestedJson = await confirm({
+            message: "是否解析嵌套的 JSON 字符串？",
+            initialValue: false,
+          });
 
-      // Step 5: Noise paths
-      console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("步骤 5/6: 输入要忽略的路径（可选）");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+          if (isCancel(parseNestedJson)) {
+            cancel("操作已取消");
+            process.exit(0);
+          }
 
-      const noisePaths = await getPaths("输入要忽略的路径（逗号分隔，直接回车跳过）");
+          // Noise paths
+          const noisePathsInput = await text({
+            message: "输入要忽略的路径（可选, 逗号分隔）",
+            placeholder: "data.timestamp,items.name",
+            initialValue: "",
+          });
 
-      // Step 6: Special paths
-      console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-      console.log("步骤 6/6: 输入特殊路径（可选）");
-      console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+          if (isCancel(noisePathsInput)) {
+            cancel("操作已取消");
+            process.exit(0);
+          }
 
-      const config: Config = {
-        json1,
-        json2,
-        preset,
-        parseNestedJson,
-        noisePaths,
-        specialPaths: [],
-      };
+          const noisePaths = noisePathsInput
+            ? noisePathsInput.split(",").map((p) => p.trim()).filter(Boolean)
+            : [];
 
-      // Show loading
-      console.log("⏳ 正在比较...\n");
-      await runGumCommand("gum spin --spinner dot --title '正在比较 JSON...' -- sleep 0.5");
+          // Special paths
+          const specialPathsInput = await text({
+            message: "输入特殊路径（可选, 逗号分隔）",
+            placeholder: "config.settings,users.id",
+            initialValue: "",
+          });
 
-      // Perform diff
-      const left = JSON.parse(config.json1);
-      const right = JSON.parse(config.json2);
+          if (isCancel(specialPathsInput)) {
+            cancel("操作已取消");
+            process.exit(0);
+          }
 
-      const diffService = new DiffService(config.preset);
-      const results = diffService.diffElement(left, right, {
-        noisePath: config.noisePaths,
-        specialPath: config.specialPaths,
-      });
+          const specialPaths = specialPathsInput
+            ? specialPathsInput.split(",").map((p) => p.trim()).filter(Boolean)
+            : [];
 
-      console.clear();
-      console.log("🔍 Diffson - 比较结果\n");
+          return {
+            preset: preset as PresetName,
+            parseNestedJson: parseNestedJson as boolean,
+            noisePaths,
+            specialPaths,
+          };
+        })();
 
-      // Show results and handle user action
-      let action = await showResults(results);
+        // Step 2b: Perform diff
+        const s = spinner();
+        s.start("正在比较 JSON...");
 
-      if (action === "🔄 重新开始") {
-        console.clear();
-        console.log("🔍 Diffson - 交互式 JSON Diff 工具\n");
-        continue;
-      } else if (action === "📋 复制结果到剪贴板") {
-        await copyToClipboard(results);
-        continue;
-      } else if (action === "💾 保存结果到文件") {
-        await saveResults(results);
-        continue;
-      } else if (action === "🚪 退出") {
-        console.log("👋 再见！");
-        break;
+        const left = JSON.parse(jsonInputs.json1);
+        const right = JSON.parse(jsonInputs.json2);
+
+        const diffService = new DiffService(config.preset);
+        const results = diffService.diffElement(left, right, {
+          noisePath: config.noisePaths,
+          specialPath: config.specialPaths,
+          parseNestedJson: config.parseNestedJson,
+        });
+
+        s.stop("比较完成");
+
+        // Step 2c: Show results
+        log.message(renderResults(results));
+
+        // Step 2d: Handle user action (can repeat)
+        while (true) {
+          const action = await select({
+            message: "选择操作",
+            options: [
+              { value: "reconfig", label: "⚙️  重新选择配置" },
+              { value: "copy", label: "📋 复制结果到剪贴板" },
+              { value: "save", label: "💾 保存结果到文件" },
+              { value: "restart", label: "🔄 重新开始（输入新的 JSON）" },
+              { value: "exit", label: "🚪 退出" },
+            ],
+            initialValue: "reconfig",
+          });
+
+          if (isCancel(action)) {
+            cancel("操作已取消");
+            process.exit(0);
+          }
+
+          if (action === "reconfig") {
+            // Break out of action loop, go back to config selection
+            break;
+          } else if (action === "copy") {
+            await copyToClipboard(results);
+            // Stay in action loop
+            continue;
+          } else if (action === "save") {
+            await saveResults(results);
+            // Stay in action loop
+            continue;
+          } else if (action === "restart") {
+            // Break out of both inner loops, go back to JSON input
+            intro("🔍 Diffson - 交互式 JSON Diff 工具");
+            break mainLoop;
+          } else if (action === "exit") {
+            outro("👋 再见！");
+            process.exit(0);
+          }
+        }
+        // If we reach here, user selected "reconfig", continue to config selection
       }
     } catch (error) {
-      console.log(`❌ 发生错误: ${error}\n`);
-      const cmd = `gum confirm "是否重试？" --affirmative="是" --negative="否"`;
-      const result = await runGumCommand(cmd);
-      if (result.trim() !== "true") {
-        console.log("👋 再见！");
-        break;
+      log.error(`发生错误: ${error}`);
+
+      const shouldRetry = await confirm({
+        message: "是否重试？",
+        initialValue: true,
+      });
+
+      if (isCancel(shouldRetry)) {
+        cancel("操作已取消");
+        process.exit(0);
       }
-      console.clear();
+
+      if (!shouldRetry) {
+        outro("👋 再见！");
+        process.exit(0);
+      }
+
+      intro("🔍 Diffson - 交互式 JSON Diff 工具");
     }
   }
 }
 
-main();
+export async function runInteractiveMode(): Promise<void> {
+  await main();
+}

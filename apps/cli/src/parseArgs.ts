@@ -77,6 +77,24 @@ export function parseArgs(args: string[]): CliOptions {
         result.color = false;
         break;
 
+      case "--parse-nested-json":
+        result.parseNestedJson = true;
+        break;
+
+      case "--noise-path":
+        if (i + 1 < args.length) {
+          result.noisePath = args[i + 1].split(",").map(p => p.trim());
+          i++;
+        }
+        break;
+
+      case "--special-path":
+        if (i + 1 < args.length) {
+          result.specialPath = args[i + 1].split(",").map(p => p.trim());
+          i++;
+        }
+        break;
+
       default:
         // Positional arguments for JSON strings
         if (!result.json1) {

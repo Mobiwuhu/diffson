@@ -108,12 +108,7 @@ export class DiffService implements IDiffService {
       throw new Error(`Failed to parse right JSON string: ${error instanceof Error ? error.message : String(error)}`);
     }
 
-    // 如果启用递归解析嵌套 JSON
-    if (options?.parseNestedJson) {
-      left = this.parseNestedJsonStrings(left);
-      right = this.parseNestedJsonStrings(right);
-    }
-
+    // 将解析后的对象和选项传递给 diffElement
     return this.diffElement(left, right, options);
   }
 
@@ -123,8 +118,15 @@ export class DiffService implements IDiffService {
     options?: {
       noisePath?: string[];
       specialPath?: string[];
+      parseNestedJson?: boolean;
     }
   ): Result[] {
+    // 如果启用递归解析嵌套 JSON
+    if (options?.parseNestedJson) {
+      left = this.parseNestedJsonStrings(left);
+      right = this.parseNestedJsonStrings(right);
+    }
+
     const orchestrator = this.getOrCreateOrchestrator();
     const diffContext = this.compareInternal(left, right, orchestrator, options);
     return this.constructResult(diffContext);

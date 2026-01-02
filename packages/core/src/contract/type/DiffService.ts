@@ -12,6 +12,7 @@ export interface IDiffService {
   diffJson(leftJson: string, rightJson: string, options?: {
     noisePath?: string[];
     specialPath?: string[];
+    parseNestedJson?: boolean;
   }): Result[];
 
   /**
@@ -23,6 +24,7 @@ export interface IDiffService {
   diffElement(left: JsonValue, right: JsonValue, options?: {
     noisePath?: string[];
     specialPath?: string[];
+    parseNestedJson?: boolean;
   }): Result[];
 }
 
