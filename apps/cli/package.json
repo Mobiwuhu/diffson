@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "diffson": "./dist/src/index.js",
-    "diffson-interactive": "./dist/src/interactive.js"
+    "diffson": "./dist/index.js",
+    "diffson-interactive": "./dist/interactive.js"
   },
   "imports": {
     "#*": [
@@ -18,8 +18,8 @@
     ".": {
       "import": {
         "@diffson/source": "./src/index.tsx",
-        "types": "./dist/src/index.d.ts",
-        "default": "./dist/src/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       }
     },
     "./package.json": "./package.json"
@@ -27,7 +27,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "bun --conditions=@diffson/source src/index.tsx --help",
-    "interactive": "bun dist/src/interactive.js",
+    "interactive": "bun dist/interactive.js",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist node_modules"
   },
