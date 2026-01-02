@@ -10,5 +10,8 @@ export {
   TYPE_MODIFY,
 } from "./contract/constant";
 
+// Public API - Enums
+export { PresetName } from "./contract/constant/PresetName";
+
 // Public API - Service
 export { DiffService } from "./service";

@@ -2,8 +2,8 @@
   "name": "@diffson/core",
   "version": "1.0.0",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "imports": {
     "#contract": "./src/contract/index.ts",
     "#service": "./src/service/index.ts"
@@ -12,13 +12,13 @@
     ".": {
       "import": {
         "@diffson/source": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/src/index.d.ts",
+        "default": "./dist/src/index.js"
       },
       "require": {
         "@diffson/source": "./src/index.ts",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/src/index.d.ts",
+        "default": "./dist/src/index.js"
       }
     },
     "./package.json": "./package.json"
