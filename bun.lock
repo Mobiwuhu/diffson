@@ -6,7 +6,7 @@
       "name": "@diffson/monorepo",
       "devDependencies": {
         "@types/bun": "catalog:",
-        "turbo": "^2",
+        "turbo": "catalog:",
         "typescript": "catalog:",
       },
     },
@@ -43,6 +43,7 @@
     "@types/bun": "latest",
     "@wendellhu/redi": "latest",
     "is-json": "latest",
+    "turbo": "^2",
     "typescript": "^5.7.0",
   },
   "packages": {
