@@ -1,6 +1,6 @@
 {
   "name": "@diffson/core",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -9,8 +9,14 @@
     "README.md"
   ],
   "imports": {
-    "#contract": "./src/contract/index.ts",
-    "#service": "./src/service/index.ts"
+    "#contract": {
+      "@diffson/source": "./src/contract/index.ts",
+      "default": "./dist/contract/index.js"
+    },
+    "#service": {
+      "@diffson/source": "./src/service/index.ts",
+      "default": "./dist/service/index.js"
+    }
   },
   "exports": {
     ".": {
@@ -29,7 +35,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "bun test",
+    "test": "bun --conditions=@diffson/source test",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist node_modules"
   },
