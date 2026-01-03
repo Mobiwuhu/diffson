@@ -1,6 +1,6 @@
 {
   "name": "@diffson/core",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,10 +34,10 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf dist tsconfig.tsbuildinfo && tsc",
     "test": "bun --conditions=@diffson/source test",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist node_modules"
+    "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@wendellhu/redi": "catalog:",
