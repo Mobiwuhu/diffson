@@ -5,8 +5,8 @@
     "composite": true,
     "incremental": true,
     "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
+    "declarationMap": false,
+    "sourceMap": false,
     "customConditions": [
       "@diffson/source"
     ],
