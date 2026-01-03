@@ -1,14 +1,11 @@
 {
   "name": "@diffson/core",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.d.ts",
-    "!dist/**/*.map",
-    "README.md"
+    "dist"
   ],
   "imports": {
     "#contract": {
