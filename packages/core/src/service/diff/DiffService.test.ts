@@ -104,6 +104,55 @@ describe("DiffService", () => {
     });
   });
 
+  describe("preset comparison - README example", () => {
+    // 文档示例：同时包含对象新增字段和数组顺序变化
+    const left = { name: "test", items: [{ id: 1 }, { id: 2 }] };
+    const right = { name: "test", items: [{ id: 2 }, { id: 1 }], extra: true };
+
+    it("FullSmart: 检测新增字段，数组智能匹配无差异", () => {
+      const diffService = new DiffService(PresetName.FullSmart);
+      const results = diffService.diffElement(left, right);
+
+      // 应该只检测到新增的 extra 字段
+      expect(results.length).toBe(1);
+      expect(results[0].diffType).toBe("ADD");
+      expect(results[0].rightPath).toBe("extra");
+    });
+
+    it("FullOrdered: 检测新增字段，数组按索引比较有差异", () => {
+      const diffService = new DiffService(PresetName.FullOrdered);
+      const results = diffService.diffElement(left, right);
+
+      // 应该检测到：1个新增字段 + 2个数组索引差异
+      expect(results.length).toBe(3);
+
+      const addResult = results.find(r => r.diffType === "ADD");
+      expect(addResult?.rightPath).toBe("extra");
+
+      const modifyResults = results.filter(r => r.diffType === "MODIFY");
+      expect(modifyResults.length).toBe(2);
+    });
+
+    it("LeftSmart: 忽略新增字段，数组智能匹配无差异", () => {
+      const diffService = new DiffService(PresetName.LeftSmart);
+      const results = diffService.diffElement(left, right);
+
+      // 应该无差异：忽略 extra，数组智能匹配
+      expect(results.length).toBe(0);
+    });
+
+    it("LeftOrdered: 忽略新增字段，数组按索引比较有差异", () => {
+      const diffService = new DiffService(PresetName.LeftOrdered);
+      const results = diffService.diffElement(left, right);
+
+      // 应该只有数组索引差异，忽略 extra
+      expect(results.length).toBe(2);
+      expect(results.every(r => r.diffType === "MODIFY")).toBe(true);
+      expect(results[0].leftPath).toBe("items.[0].id");
+      expect(results[1].leftPath).toBe("items.[1].id");
+    });
+  });
+
   describe("compareWithOptions", () => {
     it("should ignore noise paths", () => {
       const left = { name: "test", timestamp: 1000 };
