@@ -22,8 +22,7 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean",
-    "dev": "turbo run dev",
-    "cli": "bun --conditions=@diffson/source apps/cli/src/index.tsx"
+    "dev": "turbo run dev"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
