@@ -1,5 +1,10 @@
 # Diffson - JSON 差异对比工具
 
+[![CI](https://github.com/Mobiwuhu/diffson/actions/workflows/ci.yml/badge.svg)](https://github.com/Mobiwuhu/diffson/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Bun](https://img.shields.io/badge/Bun-%23000000.svg?style=flat&logo=bun&logoColor=white)](https://bun.sh)
+[![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+
 一个强大的 JSON 对比工具，支持多种比较策略。基于 **Bun** 运行时和 **TypeScript** 开发。
 
 ## 目录
