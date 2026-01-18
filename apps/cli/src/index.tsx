@@ -1,4 +1,13 @@
 #!/usr/bin/env bun
+const originalConsoleError = console.error;
+console.error = (...args: any[]) => {
+  const message = String(args[0] || '');
+  if (message.includes('Identifier') && message.includes('already exists')) {
+    return;
+  }
+  originalConsoleError.apply(console, args);
+};
+
 import { parseArgs } from "./parseArgs";
 import { writeFileSync } from "fs";
 import { formatJsonOutput } from "./utils";

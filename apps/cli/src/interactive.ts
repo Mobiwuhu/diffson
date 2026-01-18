@@ -281,14 +281,5 @@ async function main(): Promise<void> {
 }
 
 export async function runInteractiveMode(): Promise<void> {
-  const originalConsoleError = console.error;
-
-  // 禁用 console.error 输出
-  console.error = () => { };
-
-  try {
-    await main();
-  } finally {
-    console.error = originalConsoleError;
-  }
+  await main();
 }
