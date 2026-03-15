@@ -1,9 +1,8 @@
 import { createIdentifier } from "@wendellhu/redi";
-import type { DiffContext } from "../../service/diff/DiffContext";
-import type { PathTracker } from "../../service/diff/PathTracker";
+import type { ICompareContext } from "./ICompareContext";
 
 export interface INullComparator {
-  diff(a: null, b: null, pathTracker: PathTracker): DiffContext;
+  diff(a: null, b: null, context: ICompareContext): ICompareContext;
 }
 
 export const INullComparator = createIdentifier<INullComparator>("INullComparator");

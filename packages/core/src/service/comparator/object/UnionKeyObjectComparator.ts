@@ -1,8 +1,6 @@
 import { Inject } from "@wendellhu/redi";
 import { AbstractObject } from "./AbstractObject";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
-import type { JsonObject, IComparatorOrchestrator } from "../../../contract/type";
+import type { ICompareContext, JsonObject, IComparatorOrchestrator } from "../../../contract/type";
 import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
 
 export class UnionKeyObjectComparator extends AbstractObject {
@@ -12,8 +10,8 @@ export class UnionKeyObjectComparator extends AbstractObject {
     super(orchestrator);
   }
 
-  diff(a: JsonObject, b: JsonObject, pathTracker: PathTracker): DiffContext {
+  diff(a: JsonObject, b: JsonObject, context: ICompareContext): ICompareContext {
     const unionSet = new Set<string>([...Object.keys(a), ...Object.keys(b)]);
-    return this.diffValueByKey(a, b, unionSet, pathTracker);
+    return this.diffValueByKey(a, b, unionSet, context);
   }
 }

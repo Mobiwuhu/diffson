@@ -1,20 +1,18 @@
-import type { IPrimitiveComparator } from "../../../contract/type";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
+import type { ICompareContext, IPrimitiveComparator } from "../../../contract/type";
 import { SingleNodeDifference } from "../../../contract/type";
 import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
 import { jsonElement2Str } from "../../../util";
 
 export class DefaultPrimitiveComparator implements IPrimitiveComparator {
-  diff(a: string | number | boolean, b: string | number | boolean, pathTracker: PathTracker): DiffContext {
-    const primitiveDiffContext = new DiffContext();
+  diff(a: string | number | boolean, b: string | number | boolean, context: ICompareContext): ICompareContext {
+    const primitiveDiffContext = context.fork();
 
     if (a !== b) {
       const singleNodeDifferences: SingleNodeDifference[] = [];
       singleNodeDifferences.push(
         new SingleNodeDifference(
-          pathTracker.getLeftPath().join(MERGE_PATH),
-          pathTracker.getRightPath().join(MERGE_PATH),
+          primitiveDiffContext.getLeftPath().join(MERGE_PATH),
+          primitiveDiffContext.getRightPath().join(MERGE_PATH),
           jsonElement2Str(a),
           jsonElement2Str(b)
         )

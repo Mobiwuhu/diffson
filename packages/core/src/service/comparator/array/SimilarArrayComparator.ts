@@ -1,8 +1,6 @@
 import { Inject } from "@wendellhu/redi";
 import { AbstractArray } from "./AbstractArray";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
-import type { JsonArray, IComparatorOrchestrator } from "../../../contract/type";
+import type { ICompareContext, JsonArray, IComparatorOrchestrator } from "../../../contract/type";
 import { SingleNodeDifference, IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
 
 export class SimilarArrayComparator extends AbstractArray {
@@ -15,21 +13,21 @@ export class SimilarArrayComparator extends AbstractArray {
     super(orchestrator);
   }
 
-  diffArray(a: JsonArray, b: JsonArray, pathTracker: PathTracker): DiffContext {
-    let diffContext: DiffContext;
+  diffArray(a: JsonArray, b: JsonArray, context: ICompareContext): ICompareContext {
+    let diffContext: ICompareContext;
 
     if (a.length <= b.length) {
-      diffContext = this.diff(a, b, pathTracker);
+      diffContext = this.diff(a, b, context);
     } else {
-      this.exchangeLeftAndRightPath(pathTracker);
-      diffContext = this.diff(b, a, pathTracker);
-      this.exchangeLeftAndRightPath(pathTracker);
+      this.exchangeLeftAndRightPath(context);
+      diffContext = this.diff(b, a, context);
+      this.exchangeLeftAndRightPath(context);
       this.exchangeResult(diffContext);
     }
     return diffContext;
   }
 
-  private exchangeResult(diffContext: DiffContext): void {
+  private exchangeResult(diffContext: ICompareContext): void {
     const singleNodeDifferences = diffContext.getDiffResultModels();
     for (const singleNodeDifference of singleNodeDifferences) {
       this.exchangePathAndResult(singleNodeDifference);
@@ -45,13 +43,14 @@ export class SimilarArrayComparator extends AbstractArray {
     singleNodeDifference.right = tempLeft;
   }
 
-  private exchangeLeftAndRightPath(pathTracker: PathTracker): void {
-    const tempA = pathTracker.getLeftPath();
-    pathTracker.setLeftPath(pathTracker.getRightPath());
-    pathTracker.setRightPath(tempA);
+  private exchangeLeftAndRightPath(context: ICompareContext): void {
+    const tempA = context.getLeftPath();
+    context.setLeftPath(context.getRightPath());
+    context.setRightPath(tempA);
   }
 
-  diff(a: JsonArray, b: JsonArray, pathTracker: PathTracker): DiffContext {
+  diff(a: JsonArray, b: JsonArray, context: ICompareContext): ICompareContext {
+    const arrayDiffContext = context.fork();
     const rowlength = a.length;
     const linelength = b.length;
 
@@ -63,38 +62,37 @@ export class SimilarArrayComparator extends AbstractArray {
     const line: boolean[] = Array(linelength).fill(false);
 
     for (let i = 0; i < rowlength; i++) {
-      pathTracker.addLeftPath(this.constructArrayPath(i));
-      this.constructSimilarMatrix(a, b, i, pathTracker, similarMatrix, row, line);
-      pathTracker.removeLastLeftPath();
+      arrayDiffContext.addLeftPath(this.constructArrayPath(i));
+      this.constructSimilarMatrix(a, b, i, arrayDiffContext, similarMatrix, row, line);
+      arrayDiffContext.removeLastLeftPath();
     }
-    return this.obtainDiffResult(a, b, pathTracker, row, line, similarMatrix);
+    return this.obtainDiffResult(a, b, arrayDiffContext, row, line, similarMatrix);
   }
 
   private obtainDiffResult(
     a: JsonArray,
     b: JsonArray,
-    pathTracker: PathTracker,
+    context: ICompareContext,
     row: boolean[],
     line: boolean[],
     similarMatrix: number[][]
-  ): DiffContext {
-    const arrayDiffContext = new DiffContext();
-    this.obtainModifyDiffResult(a, b, pathTracker, row, line, similarMatrix, arrayDiffContext);
-    this.obtainAddDiffResult(b, pathTracker, line, arrayDiffContext);
-    return arrayDiffContext;
+  ): ICompareContext {
+    this.obtainModifyDiffResult(a, b, context, row, line, similarMatrix, context);
+    this.obtainAddDiffResult(b, context, line, context);
+    return context;
   }
 
   private obtainAddDiffResult(
     b: JsonArray,
-    pathTracker: PathTracker,
+    context: ICompareContext,
     line: boolean[],
-    arrayDiffContext: DiffContext
+    arrayDiffContext: ICompareContext
   ): void {
     for (let j = 0; j < line.length; j++) {
       if (line[j] === this.USED) {
         continue;
       }
-      const addOrDeleteDiffContext = this.constructAddContext(b, j, pathTracker);
+      const addOrDeleteDiffContext = this.constructAddContext(b, j, context);
       this.parentContextAddChildContext(arrayDiffContext, addOrDeleteDiffContext);
     }
   }
@@ -102,11 +100,11 @@ export class SimilarArrayComparator extends AbstractArray {
   private obtainModifyDiffResult(
     a: JsonArray,
     b: JsonArray,
-    pathTracker: PathTracker,
+    context: ICompareContext,
     row: boolean[],
     line: boolean[],
     similarMatrix: number[][],
-    arrayDiffContext: DiffContext
+    arrayDiffContext: ICompareContext
   ): void {
     let counts = 0;
     for (const value of row) {
@@ -138,7 +136,7 @@ export class SimilarArrayComparator extends AbstractArray {
         b,
         bestRowIndex,
         bestLineIndex,
-        pathTracker
+        context
       );
       row[bestRowIndex] = this.USED;
       line[bestLineIndex] = this.USED;
@@ -149,11 +147,11 @@ export class SimilarArrayComparator extends AbstractArray {
   private constructAddContext(
     b: JsonArray,
     index: number,
-    pathTracker: PathTracker
-  ): DiffContext {
-    pathTracker.addAllpath(this.constructArrayPath(index));
-    const diffContext = this.diffElement(undefined, b[index], pathTracker);
-    pathTracker.removeAllLastPath();
+    context: ICompareContext
+  ): ICompareContext {
+    context.addAllPath(this.constructArrayPath(index));
+    const diffContext = this.diffElement(undefined, b[index], context);
+    context.removeAllLastPath();
     return diffContext;
   }
 
@@ -162,12 +160,12 @@ export class SimilarArrayComparator extends AbstractArray {
     b: JsonArray,
     i: number,
     bestLineIndex: number,
-    pathTracker: PathTracker
-  ): DiffContext {
-    pathTracker.addLeftPath(this.constructArrayPath(i));
-    pathTracker.addRightPath(this.constructArrayPath(bestLineIndex));
-    const diffContext = this.diffElement(a[i], b[bestLineIndex], pathTracker);
-    pathTracker.removeAllLastPath();
+    context: ICompareContext
+  ): ICompareContext {
+    context.addLeftPath(this.constructArrayPath(i));
+    context.addRightPath(this.constructArrayPath(bestLineIndex));
+    const diffContext = this.diffElement(a[i], b[bestLineIndex], context);
+    context.removeAllLastPath();
     return diffContext;
   }
 
@@ -175,7 +173,7 @@ export class SimilarArrayComparator extends AbstractArray {
     arrayA: JsonArray,
     arrayB: JsonArray,
     rowIndex: number,
-    pathTracker: PathTracker,
+    context: ICompareContext,
     similarArray: number[][],
     row: boolean[],
     line: boolean[]
@@ -188,9 +186,9 @@ export class SimilarArrayComparator extends AbstractArray {
 
     for (let j = 0; j < arrayB.length; j++) {
       if (line[j] === this.USEABLE) {
-        pathTracker.addRightPath(this.constructArrayPath(j));
-        const diffContext = this.diffElement(arrayA[rowIndex], arrayB[j], pathTracker);
-        pathTracker.removeLastRightPath();
+        context.addRightPath(this.constructArrayPath(j));
+        const diffContext = this.diffElement(arrayA[rowIndex], arrayB[j], context);
+        context.removeLastRightPath();
 
         if (diffContext.isSame()) {
           row[rowIndex] = this.USED;

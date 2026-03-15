@@ -14,14 +14,6 @@
       "ESNext",
       "DOM"
     ],
-    "paths": {
-      "#*": [
-        "./src/*.ts",
-        "./src/*.tsx",
-        "./src/*/index.ts",
-        "./src/*"
-      ]
-    },
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",

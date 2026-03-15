@@ -1,13 +1,12 @@
 import { createIdentifier } from "@wendellhu/redi";
-import type { DiffContext } from "../../service/diff/DiffContext";
-import type { PathTracker } from "../../service/diff/PathTracker";
+import type { ICompareContext } from "./ICompareContext";
 
 export interface IPrimitiveComparator {
   diff(
     a: string | number | boolean,
     b: string | number | boolean,
-    pathTracker: PathTracker
-  ): DiffContext;
+    context: ICompareContext
+  ): ICompareContext;
 }
 
 export const IPrimitiveComparator = createIdentifier<IPrimitiveComparator>("IPrimitiveComparator");

@@ -1,15 +1,14 @@
 import { createIdentifier } from "@wendellhu/redi";
+import type { ICompareContext } from "./ICompareContext";
 import type { JsonObject, JsonValue } from "./JsonTypes";
-import type { DiffContext } from "../../service/diff/DiffContext";
-import type { PathTracker } from "../../service/diff/PathTracker";
 
 export interface IObjectComparator {
-  diff(a: JsonObject, b: JsonObject, pathTracker: PathTracker): DiffContext;
+  diff(a: JsonObject, b: JsonObject, context: ICompareContext): ICompareContext;
   diffElement(
     a: JsonValue | undefined,
     b: JsonValue | undefined,
-    pathTracker: PathTracker
-  ): DiffContext;
+    context: ICompareContext
+  ): ICompareContext;
 }
 
 export const IObjectComparator = createIdentifier<IObjectComparator>("IObjectComparator");

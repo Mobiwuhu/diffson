@@ -1,8 +1,6 @@
 import { Inject } from "@wendellhu/redi";
-import type { IObjectComparator, IComparatorOrchestrator, JsonObject, JsonValue } from "../../../contract/type";
+import type { ICompareContext, IObjectComparator, IComparatorOrchestrator, JsonObject, JsonValue } from "../../../contract/type";
 import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
 import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
 
 export abstract class AbstractObject implements IObjectComparator {
@@ -10,18 +8,15 @@ export abstract class AbstractObject implements IObjectComparator {
     @Inject(IComparatorOrchestratorToken) protected orchestrator: IComparatorOrchestrator
   ) {}
 
-  abstract diff(a: JsonObject, b: JsonObject, pathTracker: PathTracker): DiffContext;
+  abstract diff(a: JsonObject, b: JsonObject, context: ICompareContext): ICompareContext;
 
-  diffElement(a: JsonValue | undefined, b: JsonValue | undefined, pathTracker: PathTracker): DiffContext {
-    return this.orchestrator.diffElement(a, b, pathTracker);
+  diffElement(a: JsonValue | undefined, b: JsonValue | undefined, context: ICompareContext): ICompareContext {
+    return this.orchestrator.diffElement(a, b, context);
   }
 
-  protected parentContextAddChildContext(parentResult: DiffContext, childResult: DiffContext): void {
+  protected parentContextAddChildContext(parentResult: ICompareContext, childResult: ICompareContext): void {
     if (childResult.isSame() === DIFFERENT) {
-      for (const singleNodeDifference of childResult.getDiffResultModels()) {
-        parentResult.getDiffResultModels().push(singleNodeDifference);
-      }
-      parentResult.setSame(false);
+      parentResult.merge(childResult);
     }
   }
 
@@ -29,24 +24,24 @@ export abstract class AbstractObject implements IObjectComparator {
     a: JsonObject,
     b: JsonObject,
     keySet: Set<string>,
-    pathTracker: PathTracker
-  ): DiffContext {
-    const objectDiffContext = new DiffContext();
+    context: ICompareContext
+  ): ICompareContext {
+    const objectDiffContext = context.fork();
     const specialPathResult: string[] = [];
 
     for (const key of keySet) {
-      pathTracker.addAllpath(key);
+      objectDiffContext.addAllPath(key);
 
-      if (!this.needDiff(pathTracker.getNoisePahList(), pathTracker.getLeftPath())) {
-        pathTracker.removeAllLastPath();
+      if (!this.needDiff(objectDiffContext.getNoisePathList(), objectDiffContext.getLeftPath())) {
+        objectDiffContext.removeAllLastPath();
         continue;
       }
 
-      const diffContext = this.diffElement(a[key], b[key], pathTracker);
+      const diffContext = this.diffElement(a[key], b[key], objectDiffContext);
       this.parentContextAddChildContext(objectDiffContext, diffContext);
 
-      this.specialPathHandle(diffContext.isSame(), specialPathResult, pathTracker);
-      pathTracker.removeAllLastPath();
+      this.specialPathHandle(diffContext.isSame(), specialPathResult, objectDiffContext);
+      objectDiffContext.removeAllLastPath();
     }
     objectDiffContext.setSpecialPathResult(specialPathResult);
     return objectDiffContext;
@@ -55,12 +50,12 @@ export abstract class AbstractObject implements IObjectComparator {
   private specialPathHandle(
     isSame: boolean,
     specialPathResult: string[],
-    pathTracker: PathTracker
+    context: ICompareContext
   ): void {
     if (!isSame) {
       return;
     }
-    const specialPath = this.getSpecialPath(pathTracker);
+    const specialPath = this.getSpecialPath(context);
     if (this.existPath(specialPath)) {
       specialPathResult.push(specialPath!);
     }
@@ -70,12 +65,12 @@ export abstract class AbstractObject implements IObjectComparator {
     return specialPath !== null;
   }
 
-  protected getSpecialPath(pathTracker: PathTracker): string | null {
-    if (!pathTracker || !pathTracker.getSpecialPath() || pathTracker.getSpecialPath()!.length === 0) {
+  protected getSpecialPath(context: ICompareContext): string | null {
+    if (!context.getSpecialPath() || context.getSpecialPath()!.length === 0) {
       return null;
     }
-    const currentPath = this.listJoin(pathTracker.getLeftPath());
-    if (pathTracker.getSpecialPath()!.includes(currentPath)) {
+    const currentPath = this.listJoin(context.getLeftPath());
+    if (context.getSpecialPath()!.includes(currentPath)) {
       return currentPath;
     }
     return null;

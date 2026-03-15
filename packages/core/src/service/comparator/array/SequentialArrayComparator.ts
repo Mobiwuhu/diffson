@@ -1,8 +1,6 @@
 import { Inject } from "@wendellhu/redi";
 import { AbstractArray } from "./AbstractArray";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
-import type { JsonArray, IComparatorOrchestrator } from "../../../contract/type";
+import type { ICompareContext, JsonArray, IComparatorOrchestrator } from "../../../contract/type";
 import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
 
 export class SequentialArrayComparator extends AbstractArray {
@@ -12,15 +10,15 @@ export class SequentialArrayComparator extends AbstractArray {
     super(orchestrator);
   }
 
-  diffArray(a: JsonArray, b: JsonArray, pathTracker: PathTracker): DiffContext {
-    const arrayDiffContext = new DiffContext();
+  diffArray(a: JsonArray, b: JsonArray, context: ICompareContext): ICompareContext {
+    const arrayDiffContext = context.fork();
     const maxLength = Math.max(a.length, b.length);
 
     for (let i = 0; i < maxLength; i++) {
-      pathTracker.addAllpath(this.constructArrayPath(i));
-      const diffContext = this.generateDiffResult(a, b, i, pathTracker);
+      arrayDiffContext.addAllPath(this.constructArrayPath(i));
+      const diffContext = this.generateDiffResult(a, b, i, arrayDiffContext);
       this.parentContextAddChildContext(arrayDiffContext, diffContext);
-      pathTracker.removeAllLastPath();
+      arrayDiffContext.removeAllLastPath();
     }
     return arrayDiffContext;
   }
@@ -29,19 +27,19 @@ export class SequentialArrayComparator extends AbstractArray {
     a: JsonArray,
     b: JsonArray,
     i: number,
-    pathTracker: PathTracker
-  ): DiffContext {
+    context: ICompareContext
+  ): ICompareContext {
     if (i >= a.length && i >= b.length) {
       throw new Error("数组索引号入参超过数组长度。 索引号:" + i + " 数组a:" + a + "数组b：" + b);
     }
 
-    let diffContext: DiffContext;
+    let diffContext: ICompareContext;
     if (i < a.length && i < b.length) {
-      diffContext = this.diffElement(a[i], b[i], pathTracker);
+      diffContext = this.diffElement(a[i], b[i], context);
     } else if (i >= a.length) {
-      diffContext = this.diffElement(undefined, b[i], pathTracker);
+      diffContext = this.diffElement(undefined, b[i], context);
     } else {
-      diffContext = this.diffElement(a[i], undefined, pathTracker);
+      diffContext = this.diffElement(a[i], undefined, context);
     }
     return diffContext;
   }

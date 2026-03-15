@@ -1,8 +1,6 @@
 import { Inject } from "@wendellhu/redi";
-import type { IArrayComparator, IComparatorOrchestrator, JsonArray, JsonValue } from "../../../contract/type";
+import type { IArrayComparator, ICompareContext, IComparatorOrchestrator, JsonArray, JsonValue } from "../../../contract/type";
 import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
 import { DIFFERENT } from "../../../contract/constant";
 
 export abstract class AbstractArray implements IArrayComparator {
@@ -10,18 +8,15 @@ export abstract class AbstractArray implements IArrayComparator {
     @Inject(IComparatorOrchestratorToken) protected orchestrator: IComparatorOrchestrator
   ) {}
 
-  abstract diffArray(a: JsonArray, b: JsonArray, pathTracker: PathTracker): DiffContext;
+  abstract diffArray(a: JsonArray, b: JsonArray, context: ICompareContext): ICompareContext;
 
-  diffElement(a: JsonValue | undefined, b: JsonValue | undefined, pathTracker: PathTracker): DiffContext {
-    return this.orchestrator.diffElement(a, b, pathTracker);
+  diffElement(a: JsonValue | undefined, b: JsonValue | undefined, context: ICompareContext): ICompareContext {
+    return this.orchestrator.diffElement(a, b, context);
   }
 
-  protected parentContextAddChildContext(parentResult: DiffContext, childResult: DiffContext): void {
+  protected parentContextAddChildContext(parentResult: ICompareContext, childResult: ICompareContext): void {
     if (childResult.isSame() === DIFFERENT) {
-      for (const singleNodeDifference of childResult.getDiffResultModels()) {
-        parentResult.getDiffResultModels().push(singleNodeDifference);
-      }
-      parentResult.setSame(false);
+      parentResult.merge(childResult);
     }
   }
 

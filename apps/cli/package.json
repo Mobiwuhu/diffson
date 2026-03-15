@@ -17,18 +17,8 @@
       "./src/*"
     ]
   },
-  "exports": {
-    ".": {
-      "import": {
-        "@diffson/source": "./src/index.tsx",
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    },
-    "./package.json": "./package.json"
-  },
   "scripts": {
-    "build": "bun run build.ts && bun run build:types",
+    "build": "rm -rf dist && bun run build.ts",
     "dev": "bun --conditions=@diffson/source src/index.tsx",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"

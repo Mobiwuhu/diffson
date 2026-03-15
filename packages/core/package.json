@@ -20,13 +20,13 @@
   "exports": {
     ".": {
       "import": {
-        "@diffson/source": "./src/index.ts",
         "types": "./dist/index.d.ts",
+        "@diffson/source": "./src/index.ts",
         "default": "./dist/index.js"
       },
       "require": {
-        "@diffson/source": "./src/index.ts",
         "types": "./dist/index.d.ts",
+        "@diffson/source": "./src/index.ts",
         "default": "./dist/index.js"
       }
     },

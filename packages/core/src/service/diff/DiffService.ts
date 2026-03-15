@@ -1,6 +1,7 @@
 import isJSON from "is-json";
 import { Injector } from "@wendellhu/redi";
 import {
+  type ICompareContext,
   type JsonValue,
   Result,
   SingleNodeDifference,
@@ -15,8 +16,7 @@ import {
   PresetName,
 } from "#contract";
 import { SPLIT_PATH, OBJECT_NULL, TYPE_MODIFY, TYPE_ADD, TYPE_DELETE } from "#contract";
-import { DiffContext } from "./DiffContext";
-import { PathTracker } from "./PathTracker";
+import { CompareContext } from "../internal/CompareContext";
 import { ComparatorOrchestrator } from "../comparator/ComparatorOrchestrator";
 import { UnionKeyObjectComparator } from "../comparator/object/UnionKeyObjectComparator";
 import { LeftJoinObjectComparator } from "../comparator/object/LeftJoinObjectComparator";
@@ -144,10 +144,10 @@ export class DiffService implements IDiffService {
     return injector.get(IComparatorOrchestrator);
   }
 
-  private constructResult(diffContext: DiffContext): Result[] {
+  private constructResult(compareContext: ICompareContext): Result[] {
     const list: Result[] = [];
 
-    for (const resultModel of diffContext.getDiffResultModels()) {
+    for (const resultModel of compareContext.getDiffResultModels()) {
       const printModel = this.convert(resultModel);
       const leftAndRightBothNull =
         resultModel.left === OBJECT_NULL && resultModel.right === OBJECT_NULL;
@@ -185,17 +185,17 @@ export class DiffService implements IDiffService {
       noisePath?: string[];
       specialPath?: string[];
     }
-  ): DiffContext {
-    const pathTracker = new PathTracker(null, null);
+  ): ICompareContext {
+    const compareContext = new CompareContext();
 
     if (options?.noisePath) {
-      pathTracker.setNoisePahList(this.splitPath(options.noisePath));
+      compareContext.setNoisePathList(this.splitPath(options.noisePath));
     }
     if (options?.specialPath) {
-      pathTracker.setSpecialPath(this.splitPath(options.specialPath));
+      compareContext.setSpecialPath(this.splitPath(options.specialPath));
     }
 
-    return orchestrator.diffElement(left, right, pathTracker);
+    return orchestrator.diffElement(left, right, compareContext);
   }
 
   private splitPath(pathList: string[]): string[] {

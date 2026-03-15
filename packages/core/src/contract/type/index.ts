@@ -1,6 +1,7 @@
 export * from "./JsonTypes";
 export * from "./Result";
 export * from "./SingleNodeDifference";
+export * from "./ICompareContext";
 export * from "./ComparatorOrchestrator";
 export * from "./ObjectComparator";
 export * from "./ArrayComparator";

@@ -1,9 +1,7 @@
-import type { INullComparator } from "../../../contract/type";
-import { DiffContext } from "../../diff/DiffContext";
-import type { PathTracker } from "../../diff/PathTracker";
+import type { ICompareContext, INullComparator } from "../../../contract/type";
 
 export class DefaultNullComparator implements INullComparator {
-  diff(_a: null, _b: null, _pathTracker: PathTracker): DiffContext {
-    return new DiffContext();
+  diff(_a: null, _b: null, context: ICompareContext): ICompareContext {
+    return context.fork();
   }
 }
