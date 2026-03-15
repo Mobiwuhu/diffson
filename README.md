@@ -124,8 +124,8 @@ diffService.diffElement(left, right, options?)
 - `left` - 第一个 JSON 值
 - `right` - 第二个 JSON 值
 - `options` - 可选配置
-  - `noisePath: string[]` - 忽略的路径列表
-  - `specialPath: string[]` - 特殊标记路径
+  - `ignorePaths: string[]` - 忽略的逻辑路径列表
+  - `arrayMatching.identityPaths: string[]` - 智能数组配对使用的 identity 路径
   - `parseNestedJson: boolean` - 是否解析嵌套 JSON 字符串
 
 #### diffJson 方法
@@ -174,9 +174,27 @@ const left = { name: 'John', timestamp: 1000 };
 const right = { name: 'John', timestamp: 2000 };
 
 const results = diffService.diffElement(left, right, {
-  noisePath: ['timestamp']
+  ignorePaths: ['timestamp']
 });
 // 结果: [] （timestamp 被忽略）
+```
+
+#### 数组 identity 路径
+
+```typescript
+const left = {
+  items: [{ id: 'a', label: 'x' }, { id: 'b', label: 'y' }]
+};
+const right = {
+  items: [{ id: 'b', label: 'x' }, { id: 'a', label: 'y' }]
+};
+
+const results = diffService.diffElement(left, right, {
+  arrayMatching: {
+    identityPaths: ['items.id']
+  }
+});
+// 智能数组比较会优先按 items.id 配对，再比较其他字段
 ```
 
 #### 解析嵌套 JSON
@@ -233,8 +251,8 @@ diffson -f1 data1.json -f2 data2.json
 |------|------|
 | `-p, --preset <name>` | 预设模式：`fullSmart`(默认), `fullOrdered`, `leftSmart`, `leftOrdered` |
 | `--parse-nested-json` | 递归解析嵌套 JSON 字符串 |
-| `--noise-path <paths>` | 忽略路径（逗号分隔） |
-| `--special-path <paths>` | 特殊路径（逗号分隔） |
+| `--ignore-path <paths>` | 忽略逻辑路径（逗号分隔） |
+| `--array-identity-path <paths>` | 智能数组配对使用的 identity 路径（逗号分隔） |
 
 #### 输出选项
 
@@ -277,10 +295,17 @@ diffson -f1 old.json -f2 new.json --filter delete,modify
 
 ```bash
 # 忽略 timestamp 字段
-diffson -f1 data1.json -f2 data2.json --noise-path timestamp
+diffson -f1 data1.json -f2 data2.json --ignore-path timestamp
 
 # 忽略数组元素的 name 字段
-diffson -f1 data1.json -f2 data2.json --noise-path items.name
+diffson -f1 data1.json -f2 data2.json --ignore-path items.name
+```
+
+#### 数组 identity 路径
+
+```bash
+# 智能数组比较时优先按 id 配对
+diffson -f1 data1.json -f2 data2.json --array-identity-path items.id
 ```
 
 #### JSON 格式输出
@@ -377,4 +402,3 @@ bun run publish
 ## 许可证
 
 MIT
-

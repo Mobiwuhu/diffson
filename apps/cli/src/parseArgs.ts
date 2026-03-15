@@ -81,16 +81,16 @@ export function parseArgs(args: string[]): CliOptions {
         result.parseNestedJson = true;
         break;
 
-      case "--noise-path":
+      case "--ignore-path":
         if (i + 1 < args.length) {
-          result.noisePath = args[i + 1].split(",").map(p => p.trim());
+          result.ignorePaths = args[i + 1].split(",").map(p => p.trim());
           i++;
         }
         break;
 
-      case "--special-path":
+      case "--array-identity-path":
         if (i + 1 < args.length) {
-          result.specialPath = args[i + 1].split(",").map(p => p.trim());
+          result.arrayIdentityPaths = args[i + 1].split(",").map(p => p.trim());
           i++;
         }
         break;

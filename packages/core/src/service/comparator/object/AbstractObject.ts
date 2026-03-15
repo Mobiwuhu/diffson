@@ -1,7 +1,7 @@
 import { Inject } from "@wendellhu/redi";
 import type { ICompareContext, IObjectComparator, IComparatorOrchestrator, JsonObject, JsonValue } from "../../../contract/type";
 import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
-import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
+import { findMatchingLogicalPath } from "../../internal/CompareContext";
 
 export abstract class AbstractObject implements IObjectComparator {
   constructor(
@@ -15,7 +15,7 @@ export abstract class AbstractObject implements IObjectComparator {
   }
 
   protected parentContextAddChildContext(parentResult: ICompareContext, childResult: ICompareContext): void {
-    if (childResult.isSame() === DIFFERENT) {
+    if (childResult.isSame() === false) {
       parentResult.merge(childResult);
     }
   }
@@ -27,12 +27,12 @@ export abstract class AbstractObject implements IObjectComparator {
     context: ICompareContext
   ): ICompareContext {
     const objectDiffContext = context.fork();
-    const specialPathResult: string[] = [];
+    const identityMatchPaths: string[] = [];
 
     for (const key of keySet) {
       objectDiffContext.addAllPath(key);
 
-      if (!this.needDiff(objectDiffContext.getNoisePathList(), objectDiffContext.getLeftPath())) {
+      if (this.shouldIgnorePath(objectDiffContext.getIgnorePaths(), objectDiffContext.getLeftPath())) {
         objectDiffContext.removeAllLastPath();
         continue;
       }
@@ -40,58 +40,29 @@ export abstract class AbstractObject implements IObjectComparator {
       const diffContext = this.diffElement(a[key], b[key], objectDiffContext);
       this.parentContextAddChildContext(objectDiffContext, diffContext);
 
-      this.specialPathHandle(diffContext.isSame(), specialPathResult, objectDiffContext);
+      this.recordIdentityMatch(diffContext.isSame(), identityMatchPaths, objectDiffContext);
       objectDiffContext.removeAllLastPath();
     }
-    objectDiffContext.setSpecialPathResult(specialPathResult);
+    objectDiffContext.setIdentityMatchPaths(identityMatchPaths);
     return objectDiffContext;
   }
 
-  private specialPathHandle(
+  private recordIdentityMatch(
     isSame: boolean,
-    specialPathResult: string[],
+    identityMatchPaths: string[],
     context: ICompareContext
   ): void {
     if (!isSame) {
       return;
     }
-    const specialPath = this.getSpecialPath(context);
-    if (this.existPath(specialPath)) {
-      specialPathResult.push(specialPath!);
+
+    const identityPath = findMatchingLogicalPath(context.getIdentityPaths(), context.getLeftPath());
+    if (identityPath !== null) {
+      identityMatchPaths.push(identityPath);
     }
   }
 
-  private existPath(specialPath: string | null): boolean {
-    return specialPath !== null;
-  }
-
-  protected getSpecialPath(context: ICompareContext): string | null {
-    if (!context.getSpecialPath() || context.getSpecialPath()!.length === 0) {
-      return null;
-    }
-    const currentPath = this.listJoin(context.getLeftPath());
-    if (context.getSpecialPath()!.includes(currentPath)) {
-      return currentPath;
-    }
-    return null;
-  }
-
-  protected needDiff(noisePahList: string[] | null, pathList: string[]): boolean {
-    if (!noisePahList || !pathList || noisePahList.length === 0 || pathList.length === 0) {
-      return true;
-    }
-    const path = this.listJoin(pathList);
-    if (noisePahList.includes(path)) {
-      return false;
-    }
-    return true;
-  }
-
-  protected listJoin(path: string[]): string {
-    if (!path) {
-      throw new Error("当前路径不能为空");
-    }
-    const filtered = path.filter((e) => e.charAt(0) !== "[");
-    return filtered.join(MERGE_PATH);
+  protected shouldIgnorePath(ignorePaths: string[] | null, pathList: string[]): boolean {
+    return findMatchingLogicalPath(ignorePaths, pathList) !== null;
   }
 }

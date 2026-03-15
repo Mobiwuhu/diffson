@@ -18,8 +18,9 @@
     ]
   },
   "scripts": {
-    "build": "rm -rf dist && bun run build.ts",
+    "build": "rm -rf dist && mkdir -p dist && bun run build.ts",
     "dev": "bun --conditions=@diffson/source src/index.tsx",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo"
   },

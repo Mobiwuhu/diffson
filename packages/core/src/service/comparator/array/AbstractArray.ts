@@ -1,7 +1,6 @@
 import { Inject } from "@wendellhu/redi";
 import type { IArrayComparator, ICompareContext, IComparatorOrchestrator, JsonArray, JsonValue } from "../../../contract/type";
 import { IComparatorOrchestrator as IComparatorOrchestratorToken } from "../../../contract/type";
-import { DIFFERENT } from "../../../contract/constant";
 
 export abstract class AbstractArray implements IArrayComparator {
   constructor(
@@ -15,7 +14,7 @@ export abstract class AbstractArray implements IArrayComparator {
   }
 
   protected parentContextAddChildContext(parentResult: ICompareContext, childResult: ICompareContext): void {
-    if (childResult.isSame() === DIFFERENT) {
+    if (childResult.isSame() === false) {
       parentResult.merge(childResult);
     }
   }

@@ -66,8 +66,10 @@ diffElement(
   left: JsonValue,
   right: JsonValue,
   options?: {
-    noisePath?: string[];
-    specialPath?: string[];
+    ignorePaths?: string[];
+    arrayMatching?: {
+      identityPaths?: string[];
+    };
     parseNestedJson?: boolean;
   }
 ): Result[]
@@ -77,8 +79,8 @@ diffElement(
 - `left`: First JSON value
 - `right`: Second JSON value
 - `options` (optional):
-  - `noisePath`: Array of paths to ignore during comparison
-  - `specialPath`: Array of paths to mark as special even if values match
+  - `ignorePaths`: Array of logical paths to skip during comparison
+  - `arrayMatching.identityPaths`: Logical identity paths used by smart array matching
   - `parseNestedJson`: Parse nested JSON strings recursively
 
 **Returns:** Array of `Result` objects representing differences.
@@ -92,8 +94,10 @@ diffJson(
   leftJson: string,
   rightJson: string,
   options?: {
-    noisePath?: string[];
-    specialPath?: string[];
+    ignorePaths?: string[];
+    arrayMatching?: {
+      identityPaths?: string[];
+    };
     parseNestedJson?: boolean;
   }
 ): Result[]
@@ -162,7 +166,7 @@ const results2 = leftDiff.diffElement(left, right);
 // Results: [] (ignores 'c' since it's not in left)
 ```
 
-### Ignoring Paths (Noise Paths)
+### Ignoring Paths
 
 ```typescript
 const diffService = new DiffService();
@@ -172,9 +176,30 @@ const right = { name: 'John', timestamp: 2000 };
 
 // Ignore timestamp field
 const results = diffService.diffElement(left, right, {
-  noisePath: ['timestamp']
+  ignorePaths: ['timestamp']
 });
 // Results: [] (timestamp is ignored)
+```
+
+### Array Identity Paths
+
+```typescript
+const diffService = new DiffService();
+
+const left = {
+  items: [{ id: "a", label: "x" }, { id: "b", label: "y" }],
+};
+
+const right = {
+  items: [{ id: "b", label: "x" }, { id: "a", label: "y" }],
+};
+
+const results = diffService.diffElement(left, right, {
+  arrayMatching: {
+    identityPaths: ["items.id"],
+  },
+});
+// Smart array matching uses items.id to pair logical items before diffing labels
 ```
 
 ### Nested Objects
@@ -246,7 +271,7 @@ Paths use dot notation to reference nested fields:
 - `parent.child` - Nested object field
 - `items.[0].name` - Field in array element
 
-When using `noisePath`, array indices are auto-filtered:
+When using `ignorePaths` or `arrayMatching.identityPaths`, array indices are auto-filtered:
 - `items.name` matches `items.[0].name`, `items.[1].name`, etc.
 
 ## TypeScript Support
@@ -260,5 +285,4 @@ import type { JsonValue, Result, PresetName } from '@diffson/core';
 ## License
 
 MIT
-
 

@@ -66,9 +66,9 @@ diffson -f1 data1.json -f2 data2.json
 ### Advanced Options
 
 - `--parse-nested-json` - Parse nested JSON strings recursively
-- `--noise-path <paths>` - Ignore specific paths (comma-separated)
+- `--ignore-path <paths>` - Ignore logical paths (comma-separated)
   - Example: `items.name` (matches `items.[0].name`, `items.[1].name`, etc.)
-- `--special-path <paths>` - Mark special paths even if values match (comma-separated)
+- `--array-identity-path <paths>` - Help smart array matching pair logical items by identity (comma-separated)
 
 ### Output Options
 
@@ -144,10 +144,17 @@ diffson '{"data":"{\"nested\":\"value\"}"}' '{"data":"{\"nested\":\"value2\"}"}'
 
 ```bash
 # Ignore timestamp fields in array items
-diffson --file1 data1.json --file2 data2.json --noise-path items.timestamp
+diffson --file1 data1.json --file2 data2.json --ignore-path items.timestamp
 
 # Ignore multiple paths
-diffson --file1 data1.json --file2 data2.json --noise-path items.name,metadata.createdAt
+diffson --file1 data1.json --file2 data2.json --ignore-path items.name,metadata.createdAt
+```
+
+### Array Identity Paths
+
+```bash
+# Help smart array matching pair items by id
+diffson --file1 data1.json --file2 data2.json --array-identity-path items.id
 ```
 
 ### JSON Format Output
@@ -279,4 +286,3 @@ bun run typecheck
 ## License
 
 MIT
-

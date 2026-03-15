@@ -12,6 +12,6 @@ export interface CliOptions {
   filter?: string;
   color?: boolean;
   parseNestedJson?: boolean;
-  noisePath?: string[];
-  specialPath?: string[];
+  ignorePaths?: string[];
+  arrayIdentityPaths?: string[];
 }

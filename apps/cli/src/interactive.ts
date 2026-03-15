@@ -17,8 +17,8 @@ export interface Config {
   json2: string;
   preset: PresetName;
   parseNestedJson: boolean;
-  noisePaths: string[];
-  specialPaths: string[];
+  ignorePaths: string[];
+  arrayIdentityPaths: string[];
 }
 
 function validateJson(json: string): boolean {
@@ -157,43 +157,43 @@ async function main(): Promise<void> {
             process.exit(0);
           }
 
-          // Noise paths
-          const noisePathsInput = await text({
-            message: "输入要忽略的路径（可选, 逗号分隔）",
+          // Ignored paths
+          const ignorePathsInput = await text({
+            message: "输入要忽略的逻辑路径（可选, 逗号分隔）",
             placeholder: "data.timestamp,items.name",
             initialValue: "",
           });
 
-          if (isCancel(noisePathsInput)) {
+          if (isCancel(ignorePathsInput)) {
             cancel("操作已取消");
             process.exit(0);
           }
 
-          const noisePaths = noisePathsInput
-            ? noisePathsInput.split(",").map((p) => p.trim()).filter(Boolean)
+          const ignorePaths = ignorePathsInput
+            ? ignorePathsInput.split(",").map((p) => p.trim()).filter(Boolean)
             : [];
 
-          // Special paths
-          const specialPathsInput = await text({
-            message: "输入特殊路径（可选, 逗号分隔）",
-            placeholder: "config.settings,users.id",
+          // Array identity paths
+          const arrayIdentityPathsInput = await text({
+            message: "输入数组 identity 路径（可选, 逗号分隔，仅智能数组匹配使用）",
+            placeholder: "items.id,users.email",
             initialValue: "",
           });
 
-          if (isCancel(specialPathsInput)) {
+          if (isCancel(arrayIdentityPathsInput)) {
             cancel("操作已取消");
             process.exit(0);
           }
 
-          const specialPaths = specialPathsInput
-            ? specialPathsInput.split(",").map((p) => p.trim()).filter(Boolean)
+          const arrayIdentityPaths = arrayIdentityPathsInput
+            ? arrayIdentityPathsInput.split(",").map((p) => p.trim()).filter(Boolean)
             : [];
 
           return {
             preset: preset as PresetName,
             parseNestedJson: parseNestedJson as boolean,
-            noisePaths,
-            specialPaths,
+            ignorePaths,
+            arrayIdentityPaths,
           };
         })();
 
@@ -206,8 +206,10 @@ async function main(): Promise<void> {
 
         const diffService = new DiffService(config.preset);
         const results = diffService.diffElement(left, right, {
-          noisePath: config.noisePaths,
-          specialPath: config.specialPaths,
+          ignorePaths: config.ignorePaths,
+          arrayMatching: config.arrayIdentityPaths.length > 0
+            ? { identityPaths: config.arrayIdentityPaths }
+            : undefined,
           parseNestedJson: config.parseNestedJson,
         });
 

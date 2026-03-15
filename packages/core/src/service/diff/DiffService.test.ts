@@ -37,7 +37,6 @@ describe("DiffService", () => {
 
       const diffService = new DiffService().withArrayComparator(SequentialArrayComparator);
       const results = diffService.diffElement(left, right);
-      console.log(results);
 
       expect(results.length).toBe(1);
       expect(results[0].leftPath).toBe("items.[1]");
@@ -154,29 +153,92 @@ describe("DiffService", () => {
   });
 
   describe("compareWithOptions", () => {
-    it("should ignore noise paths", () => {
+    it("should ignore configured logical paths", () => {
       const left = { name: "test", timestamp: 1000 };
       const right = { name: "test", timestamp: 2000 };
 
       const diffService = new DiffService();
       const results = diffService.diffElement(left, right, {
-        noisePath: ["timestamp"],
+        ignorePaths: ["timestamp"],
       });
 
       expect(results).toEqual([]);
     });
 
-    it("should handle special paths", () => {
-      const left = { name: "test", special: "value1" };
-      const right = { name: "test", special: "value2" };
+    it("should ignore logical paths regardless of array indices", () => {
+      const left = {
+        items: [{ name: "Alice" }, { name: "Bob" }],
+      };
+      const right = {
+        items: [{ name: "Carol" }, { name: "Dave" }],
+      };
 
       const diffService = new DiffService();
       const results = diffService.diffElement(left, right, {
-        specialPath: ["special"],
+        ignorePaths: ["items.name"],
       });
 
-      // Special paths are tracked differently
-      expect(results.length).toBe(1);
+      expect(results).toEqual([]);
+    });
+
+    it("should use array identity paths to influence smart array matching without suppressing diffs", () => {
+      const left = {
+        items: [
+          { id: "a", label: "x" },
+          { id: "b", label: "y" },
+        ],
+      };
+      const right = {
+        items: [
+          { id: "b", label: "x" },
+          { id: "a", label: "y" },
+        ],
+      };
+
+      const diffService = new DiffService();
+      const defaultResults = diffService.diffElement(left, right);
+      const identityResults = diffService.diffElement(left, right, {
+        arrayMatching: {
+          identityPaths: ["items.id"],
+        },
+      });
+
+      expect(defaultResults.map((result) => result.leftPath)).toEqual([
+        "items.[0].id",
+        "items.[1].id",
+      ]);
+      expect(identityResults.map((result) => result.leftPath)).toEqual([
+        "items.[0].label",
+        "items.[1].label",
+      ]);
+      expect(identityResults).toHaveLength(2);
+    });
+
+    it("should ignore array identity paths in ordered presets", () => {
+      const left = {
+        items: [
+          { id: "a", label: "x" },
+          { id: "b", label: "y" },
+        ],
+      };
+      const right = {
+        items: [
+          { id: "b", label: "x" },
+          { id: "a", label: "y" },
+        ],
+      };
+
+      const diffService = new DiffService(PresetName.FullOrdered);
+      const results = diffService.diffElement(left, right, {
+        arrayMatching: {
+          identityPaths: ["items.id"],
+        },
+      });
+
+      expect(results.map((result) => result.leftPath)).toEqual([
+        "items.[0].id",
+        "items.[1].id",
+      ]);
     });
   });
 
@@ -337,5 +399,4 @@ describe("DiffService - parseNestedJson", () => {
     expect(results.length).toBe(0);
   });
 });
-
 

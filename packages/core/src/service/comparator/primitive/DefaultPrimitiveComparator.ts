@@ -1,6 +1,6 @@
 import type { ICompareContext, IPrimitiveComparator } from "../../../contract/type";
 import { SingleNodeDifference } from "../../../contract/type";
-import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
+import { MERGE_PATH } from "../../../contract/constant";
 import { jsonElement2Str } from "../../../util";
 
 export class DefaultPrimitiveComparator implements IPrimitiveComparator {
@@ -18,7 +18,7 @@ export class DefaultPrimitiveComparator implements IPrimitiveComparator {
         )
       );
       primitiveDiffContext.setDiffResultModels(singleNodeDifferences);
-      primitiveDiffContext.setSame(DIFFERENT);
+      primitiveDiffContext.setSame(false);
     }
     return primitiveDiffContext;
   }

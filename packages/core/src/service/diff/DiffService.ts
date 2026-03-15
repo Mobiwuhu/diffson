@@ -2,6 +2,7 @@ import isJSON from "is-json";
 import { Injector } from "@wendellhu/redi";
 import {
   type ICompareContext,
+  type DiffOptions,
   type JsonValue,
   Result,
   SingleNodeDifference,
@@ -15,8 +16,8 @@ import {
   type IComparatorOrchestrator as IComparatorOrchestratorType,
   PresetName,
 } from "#contract";
-import { SPLIT_PATH, OBJECT_NULL, TYPE_MODIFY, TYPE_ADD, TYPE_DELETE } from "#contract";
-import { CompareContext } from "../internal/CompareContext";
+import { TYPE_MODIFY, TYPE_ADD, TYPE_DELETE } from "#contract";
+import { CompareContext, normalizeLogicalPaths } from "../internal/CompareContext";
 import { ComparatorOrchestrator } from "../comparator/ComparatorOrchestrator";
 import { UnionKeyObjectComparator } from "../comparator/object/UnionKeyObjectComparator";
 import { LeftJoinObjectComparator } from "../comparator/object/LeftJoinObjectComparator";
@@ -88,11 +89,7 @@ export class DiffService implements IDiffService {
     return this;
   }
 
-  diffJson(leftJson: string, rightJson: string, options?: {
-    noisePath?: string[];
-    specialPath?: string[];
-    parseNestedJson?: boolean;
-  }): Result[] {
+  diffJson(leftJson: string, rightJson: string, options?: DiffOptions): Result[] {
     let left: JsonValue;
     let right: JsonValue;
 
@@ -115,11 +112,7 @@ export class DiffService implements IDiffService {
   diffElement(
     left: JsonValue,
     right: JsonValue,
-    options?: {
-      noisePath?: string[];
-      specialPath?: string[];
-      parseNestedJson?: boolean;
-    }
+    options?: DiffOptions
   ): Result[] {
     // 如果启用递归解析嵌套 JSON
     if (options?.parseNestedJson) {
@@ -150,14 +143,14 @@ export class DiffService implements IDiffService {
     for (const resultModel of compareContext.getDiffResultModels()) {
       const printModel = this.convert(resultModel);
       const leftAndRightBothNull =
-        resultModel.left === OBJECT_NULL && resultModel.right === OBJECT_NULL;
+        resultModel.left === null && resultModel.right === null;
 
       if (leftAndRightBothNull) {
         printModel.diffType = TYPE_MODIFY;
-      } else if (resultModel.left === OBJECT_NULL) {
+      } else if (resultModel.left === null) {
         printModel.diffType = TYPE_ADD;
         printModel.leftPath = null;
-      } else if (resultModel.right === OBJECT_NULL) {
+      } else if (resultModel.right === null) {
         printModel.diffType = TYPE_DELETE;
         printModel.rightPath = null;
       } else {
@@ -181,30 +174,22 @@ export class DiffService implements IDiffService {
     left: JsonValue,
     right: JsonValue,
     orchestrator: IComparatorOrchestratorType,
-    options?: {
-      noisePath?: string[];
-      specialPath?: string[];
-    }
+    options?: DiffOptions
   ): ICompareContext {
     const compareContext = new CompareContext();
 
-    if (options?.noisePath) {
-      compareContext.setNoisePathList(this.splitPath(options.noisePath));
+    if (options?.ignorePaths) {
+      compareContext.setIgnorePaths(this.normalizePaths(options.ignorePaths));
     }
-    if (options?.specialPath) {
-      compareContext.setSpecialPath(this.splitPath(options.specialPath));
+    if (options?.arrayMatching?.identityPaths) {
+      compareContext.setIdentityPaths(this.normalizePaths(options.arrayMatching.identityPaths));
     }
 
     return orchestrator.diffElement(left, right, compareContext);
   }
 
-  private splitPath(pathList: string[]): string[] {
-    const result: string[] = [];
-    for (const path of pathList) {
-      const parts = path.split(SPLIT_PATH);
-      result.push(parts.join("."));
-    }
-    return result;
+  private normalizePaths(pathList: string[]): string[] {
+    return normalizeLogicalPaths(pathList);
   }
 
   private parseNestedJsonStrings(value: JsonValue): JsonValue {

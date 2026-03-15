@@ -63,15 +63,16 @@ function showHelp(): void {
    --format <type>         Output format: text or json (default: text)
    --filter <type>        Filter by diff type: add, delete, modify (comma-separated)
    --parse-nested-json     Parse nested JSON strings (recursive)
-   --noise-path <paths>    Ignore specific paths (comma-separated, array indices auto-filtered)
-   --special-path <paths>  Mark special paths even if values match (comma-separated)
+   --ignore-path <paths>   Ignore logical paths (comma-separated, array indices auto-filtered)
+   --array-identity-path <paths>
+                           Hint smart array matching with identity paths (comma-separated)
    -o, --output <path>    Write output to file
    --color, --no-color     Enable or disable colored output
    -v, --version           Show version number
    -h, --help              Show help
 
  Path Format:
-   Use '.' to separate object fields. Array indices [0], [1] are auto-filtered in matching:
+   Use '.' to separate object fields. Array indices [0], [1] are auto-filtered in logical path matching:
    - Object field:       data.timestamp
    - Array element field: items.name  (matches items.[0].name, items.[1].name, etc.)
 
@@ -86,11 +87,11 @@ function showHelp(): void {
    # Compare JSON files
    diffson --file1 data1.json --file2 data2.json
 
-   # With noise paths (ignore array elements' name fields)
-   diffson --file1 data1.json --file2 data2.json --noise-path items.name
+   # Ignore array elements' name fields
+   diffson --file1 data1.json --file2 data2.json --ignore-path items.name
 
-   # With special paths
-   diffson --file1 data1.json --file2 data2.json --special-path config.settings
+   # Help smart array matching pair items by id
+   diffson --file1 data1.json --file2 data2.json --array-identity-path items.id
 
    # With nested JSON parsing
    diffson '{"data":"{\\"nested\\":\\"value\\"}"}' '{"data":"{\\"nested\\":\\"value2\\"}"}' --parse-nested-json
@@ -151,8 +152,10 @@ function performDiff(): void {
     const presetName = parsed.preset ? parsePreset(parsed.preset) : PresetName.FullSmart;
     const diffService = new DiffService(presetName);
     let results = diffService.diffElement(left, right, {
-      noisePath: parsed.noisePath || [],
-      specialPath: parsed.specialPath || [],
+      ignorePaths: parsed.ignorePaths || [],
+      arrayMatching: parsed.arrayIdentityPaths?.length
+        ? { identityPaths: parsed.arrayIdentityPaths }
+        : undefined,
       parseNestedJson: parsed.parseNestedJson,
     });
 

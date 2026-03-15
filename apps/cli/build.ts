@@ -5,9 +5,17 @@
  * Uses Bun's native bundler for optimized output
  */
 
+import { join } from "node:path";
+
+const entrypoint = join(import.meta.dir, "src/index.tsx");
+const outdir = join(import.meta.dir, "dist");
+
 const result = await Bun.build({
-  entrypoints: ['./src/index.tsx'],
-  outdir: './dist',
+  entrypoints: [entrypoint],
+  outdir,
+  naming: {
+    entry: "index.js",
+  },
   target: 'bun',
   format: 'esm',
   minify: {
@@ -37,4 +45,3 @@ for (const output of result.outputs) {
   const size = (output.size / 1024).toFixed(2);
   console.log(`  - ${output.path} (${size} KB)`);
 }
-

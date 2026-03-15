@@ -2,6 +2,16 @@ import { createIdentifier } from "@wendellhu/redi";
 import type { JsonValue } from "./JsonTypes";
 import type { Result } from "./Result";
 
+export interface DiffArrayMatchingOptions {
+  identityPaths?: string[];
+}
+
+export interface DiffOptions {
+  ignorePaths?: string[];
+  arrayMatching?: DiffArrayMatchingOptions;
+  parseNestedJson?: boolean;
+}
+
 export interface IDiffService {
   /**
    * Diff two JSON strings
@@ -9,11 +19,7 @@ export interface IDiffService {
    * @param rightJson - Right JSON string
    * @returns Array of differences
    */
-  diffJson(leftJson: string, rightJson: string, options?: {
-    noisePath?: string[];
-    specialPath?: string[];
-    parseNestedJson?: boolean;
-  }): Result[];
+  diffJson(leftJson: string, rightJson: string, options?: DiffOptions): Result[];
 
   /**
    * Diff two JSON objects directly
@@ -21,11 +27,7 @@ export interface IDiffService {
    * @param right - Right JSON value
    * @returns Array of differences
    */
-  diffElement(left: JsonValue, right: JsonValue, options?: {
-    noisePath?: string[];
-    specialPath?: string[];
-    parseNestedJson?: boolean;
-  }): Result[];
+  diffElement(left: JsonValue, right: JsonValue, options?: DiffOptions): Result[];
 }
 
 export const IDiffService = createIdentifier<IDiffService>("IDiffService");

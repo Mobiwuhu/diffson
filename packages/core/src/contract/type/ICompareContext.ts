@@ -5,12 +5,12 @@ export interface ICompareContext {
   setSame(same: boolean): void;
   getDiffResultModels(): SingleNodeDifference[];
   setDiffResultModels(singleNodeDifferences: SingleNodeDifference[]): void;
-  getSpecialPathResult(): string[] | null;
-  setSpecialPathResult(specialPathResult: string[]): void;
-  getNoisePathList(): string[] | null;
-  setNoisePathList(noisePathList: string[]): void;
-  getSpecialPath(): string[] | null;
-  setSpecialPath(specialPath: string[]): void;
+  getIdentityMatchPaths(): string[] | null;
+  setIdentityMatchPaths(identityMatchPaths: string[]): void;
+  getIgnorePaths(): string[] | null;
+  setIgnorePaths(ignorePaths: string[]): void;
+  getIdentityPaths(): string[] | null;
+  setIdentityPaths(identityPaths: string[]): void;
   getLeftPath(): string[];
   setLeftPath(leftPath: string[]): void;
   getRightPath(): string[];

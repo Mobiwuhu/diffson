@@ -1,32 +1,62 @@
+import { MERGE_PATH } from "../../contract/constant";
 import type { ICompareContext, SingleNodeDifference } from "../../contract/type";
 
 type CompareContextOptions = {
-  noisePathList?: string[] | null;
-  specialPath?: string[] | null;
+  ignorePaths?: string[] | null;
+  identityPaths?: string[] | null;
   leftPath?: string[];
   rightPath?: string[];
   same?: boolean;
   diffResultModels?: SingleNodeDifference[];
-  specialPathResult?: string[] | null;
+  identityMatchPaths?: string[] | null;
 };
+
+function stripArrayIndexSegments(pathParts: string[]): string[] {
+  return pathParts.filter((part) => part.length > 0 && part.charAt(0) !== "[");
+}
+
+export function normalizeLogicalPath(path: string): string {
+  return stripArrayIndexSegments(path.split(MERGE_PATH)).join(MERGE_PATH);
+}
+
+export function normalizeLogicalPaths(paths: string[]): string[] {
+  return paths.map(normalizeLogicalPath);
+}
+
+export function toLogicalPath(pathParts: string[]): string {
+  return stripArrayIndexSegments(pathParts).join(MERGE_PATH);
+}
+
+export function findMatchingLogicalPath(paths: string[] | null, pathParts: string[]): string | null {
+  if (!paths || paths.length === 0 || pathParts.length === 0) {
+    return null;
+  }
+
+  const currentPath = toLogicalPath(pathParts);
+  if (currentPath.length === 0) {
+    return null;
+  }
+
+  return paths.includes(currentPath) ? currentPath : null;
+}
 
 export class CompareContext implements ICompareContext {
   private leftPath: string[];
   private rightPath: string[];
-  private specialPath: string[] | null;
-  private noisePathList: string[] | null;
+  private identityPaths: string[] | null;
+  private ignorePaths: string[] | null;
   private same: boolean;
   private diffResultModels: SingleNodeDifference[];
-  private specialPathResult: string[] | null;
+  private identityMatchPaths: string[] | null;
 
   constructor(options: CompareContextOptions = {}) {
     this.leftPath = [...(options.leftPath ?? [])];
     this.rightPath = [...(options.rightPath ?? [])];
-    this.specialPath = options.specialPath ? [...options.specialPath] : null;
-    this.noisePathList = options.noisePathList ? [...options.noisePathList] : null;
+    this.identityPaths = options.identityPaths ? [...options.identityPaths] : null;
+    this.ignorePaths = options.ignorePaths ? [...options.ignorePaths] : null;
     this.same = options.same ?? true;
     this.diffResultModels = [...(options.diffResultModels ?? [])];
-    this.specialPathResult = options.specialPathResult ? [...options.specialPathResult] : null;
+    this.identityMatchPaths = options.identityMatchPaths ? [...options.identityMatchPaths] : null;
   }
 
   isSame(): boolean {
@@ -45,28 +75,28 @@ export class CompareContext implements ICompareContext {
     this.diffResultModels = [...singleNodeDifferences];
   }
 
-  getSpecialPathResult(): string[] | null {
-    return this.specialPathResult;
+  getIdentityMatchPaths(): string[] | null {
+    return this.identityMatchPaths;
   }
 
-  setSpecialPathResult(specialPathResult: string[]): void {
-    this.specialPathResult = [...specialPathResult];
+  setIdentityMatchPaths(identityMatchPaths: string[]): void {
+    this.identityMatchPaths = [...identityMatchPaths];
   }
 
-  getNoisePathList(): string[] | null {
-    return this.noisePathList;
+  getIgnorePaths(): string[] | null {
+    return this.ignorePaths;
   }
 
-  setNoisePathList(noisePathList: string[]): void {
-    this.noisePathList = [...noisePathList];
+  setIgnorePaths(ignorePaths: string[]): void {
+    this.ignorePaths = [...ignorePaths];
   }
 
-  getSpecialPath(): string[] | null {
-    return this.specialPath;
+  getIdentityPaths(): string[] | null {
+    return this.identityPaths;
   }
 
-  setSpecialPath(specialPath: string[]): void {
-    this.specialPath = [...specialPath];
+  setIdentityPaths(identityPaths: string[]): void {
+    this.identityPaths = [...identityPaths];
   }
 
   getLeftPath(): string[] {
@@ -113,8 +143,8 @@ export class CompareContext implements ICompareContext {
 
   fork(): ICompareContext {
     return new CompareContext({
-      noisePathList: this.noisePathList,
-      specialPath: this.specialPath,
+      ignorePaths: this.ignorePaths,
+      identityPaths: this.identityPaths,
       leftPath: this.leftPath,
       rightPath: this.rightPath,
     });

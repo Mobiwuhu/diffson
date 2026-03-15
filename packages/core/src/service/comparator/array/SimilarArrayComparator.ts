@@ -194,7 +194,7 @@ export class SimilarArrayComparator extends AbstractArray {
           row[rowIndex] = this.USED;
           line[j] = this.USED;
           return;
-        } else if (this.existSpecialPath(diffContext.getSpecialPathResult())) {
+        } else if (this.hasIdentityMatch(diffContext.getIdentityMatchPaths())) {
           similarArray[rowIndex][j] = 0;
         } else {
           similarArray[rowIndex][j] = diffContext.getDiffResultModels().length;
@@ -203,7 +203,7 @@ export class SimilarArrayComparator extends AbstractArray {
     }
   }
 
-  private existSpecialPath(specialPathResult: string[] | null): boolean {
-    return specialPathResult !== null && specialPathResult.length > 0;
+  private hasIdentityMatch(identityMatchPaths: string[] | null): boolean {
+    return identityMatchPaths !== null && identityMatchPaths.length > 0;
   }
 }

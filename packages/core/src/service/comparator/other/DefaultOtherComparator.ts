@@ -1,6 +1,6 @@
 import type { ICompareContext, IOtherComparator, JsonValue } from "../../../contract/type";
 import { SingleNodeDifference } from "../../../contract/type";
-import { DIFFERENT, MERGE_PATH } from "../../../contract/constant";
+import { MERGE_PATH } from "../../../contract/constant";
 import { jsonElement2Str } from "../../../util";
 
 export class DefaultOtherComparator implements IOtherComparator {
@@ -16,7 +16,7 @@ export class DefaultOtherComparator implements IOtherComparator {
       )
     );
     otherDiffContext.setDiffResultModels(singleNodeDifferences);
-    otherDiffContext.setSame(DIFFERENT);
+    otherDiffContext.setSame(false);
     return otherDiffContext;
   }
 }
